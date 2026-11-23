@@ -124,7 +124,8 @@ class TestBandAverage:
     @given(
         st.floats(-1e3, 1e3),
         arrays(np.bool_, 60),
-        arrays(np.float64, (3, 60), elements=st.floats(0.0, 1.0)),
+        # 0 or well above the subnormals, where a sum keeps its precision
+        arrays(np.float64, (3, 60), elements=st.just(0.0) | st.floats(1e-6, 1.0)),
     )
     def test_a_flat_spectrum_is_its_value(self, value, mask, responses) -> None:
         # gate G1-band
@@ -335,7 +336,8 @@ class TestSpectralDensities:
     def test_inverse_pair(self, density: float, wavelength: float) -> None:
         there = per_nm_to_per_cm(density, wavelength)
         back = per_cm_to_per_nm(there, 1e7 / wavelength)
-        assert_matches_oracle(back, density, rtol=1e-15)
+        # eight roundings; a subnormal density has no relative precision
+        assert_matches_oracle(back, density, rtol=2e-15, atol=1e-300)
 
     def test_the_integral_is_conserved(self) -> None:
         wavelength = np.linspace(1500.0, 1700.0, 10_001)
