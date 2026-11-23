@@ -24,7 +24,7 @@ dependencies = [
     # constants, the ellipsoid and Earth-centred coordinates
     "geophysix>=0.0.5",
     # the array backend, pipekit_array.functions; compat is array-api-compat
-    "pipekit-array[numpy,compat]>=0.1.2",
+    "pipekit-array[numpy,compat]>=0.1.3",
 ]
 
 [project.optional-dependencies]
@@ -95,7 +95,7 @@ docs = [
 geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.5" }
 # pipekit neither (jejjohnson/pipekit#247). Every package of the stack pins its
 # packages to one tag: uv refuses two refs of one repository.
-pipekit-array = { git = "https://github.com/jejjohnson/pipekit", subdirectory = "packages/pipekit-array", tag = "pipekit-ops-v0.2.2" }
+pipekit-array = { git = "https://github.com/jejjohnson/pipekit", subdirectory = "packages/pipekit-array", tag = "pipekit-array-v0.1.3" }
 
 [build-system]
 requires = ["hatchling"]

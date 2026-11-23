@@ -15,9 +15,6 @@ atmosphere.
 | `radiomax.retrievals` | empirical formulas with given coefficients |
 | `radiomax.sar` | SAR calibration |
 | `radiomax.altimetry` | altimeter range corrections |
-
-Each module appears with its first feature: `radiomax.geometry`,
-`radiomax.radiometry`, `radiomax.thermal` and `radiomax.retrievals` exist.
 """
 
 from __future__ import annotations

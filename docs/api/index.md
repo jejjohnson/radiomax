@@ -10,8 +10,8 @@ The public API is the set of public modules below, plus the exceptions that `rad
 | [`radiomax.radiometry`](radiometry.md) | Counts, radiance, reflectance, band averages, response matrices, spectral densities | available |
 | [`radiomax.thermal`](thermal.md) | Planck's law per wavenumber, its logarithm, and its views per µm and per GHz, monochromatic brightness temperature, and the band inverses sensors publish coefficients for | available |
 | [`radiomax.retrievals`](retrievals.md) | The Ross–Li kernels, the kernel BRDF and its nadir adjustment, split-window temperatures, ocean-colour chlorophyll | available |
-| `radiomax.sar` | SAR calibration | planned |
-| `radiomax.altimetry` | Altimeter range corrections | planned |
+| [`radiomax.sar`](sar.md) | SAR calibration: backscatter from digital numbers, and σ⁰, β⁰ and γ⁰ from each other | available |
+| [`radiomax.altimetry`](altimetry.md) | Altimeter range corrections (dry and wet troposphere, ionosphere, inverse barometer) and the sea surface height | available |
 | [Type aliases](typing.md) | `ArrayLike` | available |
 | [Exceptions](exceptions.md) | `RadiomaxError`, `BackendError`, `ValidationError` | available |
 
