@@ -35,6 +35,7 @@ project:
     - title: Guide
       children:
         - file: guide/geometry_guide.md
+        - file: guide/navigation_guide.md
         - file: guide/radiometry_guide.md
         - file: guide/thermal_guide.md
     - title: Project

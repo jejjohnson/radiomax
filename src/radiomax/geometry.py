@@ -8,6 +8,8 @@ from radiomax._src.geometry.angles import (
     relative_azimuth,
     scattering_angle,
 )
+from radiomax._src.geometry.intersection import earth_intersection
+from radiomax._src.geometry.parallax import apparent_position
 from radiomax._src.geometry.solar import (
     earth_sun_distance,
     solar_angles,
@@ -20,6 +22,8 @@ from radiomax._src.geometry.view import view_angles
 
 __all__ = [
     "air_mass_factor",
+    "apparent_position",
+    "earth_intersection",
     "earth_sun_distance",
     "phase_angle",
     "relative_azimuth",
