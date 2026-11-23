@@ -47,3 +47,25 @@ The formulas are the Astronomical Almanac's. Over 2000–2050 the zenith is with
 ```
 
 It is within $8.8 \times 10^{-5}$ AU of SPA. The formula on the day of the year that georeader uses, $d = 1 - 0.01673 \cos(0.0172 (t - 4))$, is off by up to $8.0 \times 10^{-4}$ AU, so a reflectance computed with it differs from ours by up to $1.5 \times 10^{-3}$ relative.
+
+## The sensor's angles
+
+[`view_angles`](xref:api#radiomax.geometry.view_angles) takes the satellite's Earth-centred position, in metres, and returns the view zenith and azimuth at each pixel. `geophysix.earth.geodetic_to_ecef` makes that position from a longitude, a latitude and a height.
+
+```python
+>>> from geophysix.earth import geodetic_to_ecef
+>>> satellite = geodetic_to_ecef(2.0, 46.0, 700e3)
+>>> view_zenith, view_azimuth = geometry.view_angles(lon, 45.0, *satellite)
+>>> view_zenith.round(2)
+array([42.58, 16.98, 22.52])
+>>> view_azimuth.round(1)
+array([ 76. ,  53.9, 296.4])
+```
+
+Every azimuth points from the pixel, towards the Sun or the sensor, clockwise from north. [`relative_azimuth`](xref:api#radiomax.geometry.relative_azimuth) is sensor minus Sun, folded to [0°, 180°], so 0 is backscatter: the sensor in the Sun's direction, where the hotspot is. [`phase_angle`](xref:api#radiomax.geometry.phase_angle) and [`scattering_angle`](xref:api#radiomax.geometry.scattering_angle) follow from the two zeniths and that azimuth, and add up to 180°.
+
+```python
+>>> relative = geometry.relative_azimuth(view_azimuth, azimuth)
+>>> geometry.scattering_angle(zenith, view_zenith, relative).round(1)
+array([149.8, 150.5, 132.5])
+```
