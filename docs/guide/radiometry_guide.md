@@ -30,8 +30,8 @@ $$
 >>> radiance = radiometry.counts_to_radiance(counts, gain, -2.0)
 >>> irradiance = np.asarray([[245.0], [85.0]])
 >>> radiometry.reflectance(radiance, irradiance, zenith, distance).round(4)
-array([[0.1922, 0.1992, 0.2065],
-       [0.0796, 0.0888, 0.0982]])
+array([[0.1923, 0.199 , 0.2064],
+       [0.0795, 0.0891, 0.0986]])
 ```
 
 The radiance and the irradiance must be per the same spectral unit, here per µm. The function cannot check it, and getting it wrong scales every pixel by the same factor, which is easy to miss.
