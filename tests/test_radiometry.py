@@ -7,7 +7,7 @@ import pytest
 from _backends import assert_backends_agree, needs_jax
 from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from _oracles import georeader_reflectance
-from hypothesis import given, strategies as st
+from hypothesis import example, given, strategies as st
 
 from radiomax.radiometry import (
     counts_to_radiance,
@@ -90,10 +90,12 @@ class TestReflectance:
             assert_matches_oracle(reflectance(radiance, 1.5, zenith), 1.0, rtol=1e-14)
 
     @given(FINITE, POSITIVE, st.floats(0.0, 84.9), st.floats(0.9, 1.1))
+    @example(2.225073858507203e-309, 1.0, 0.0, 1.0)
     def test_inverse_pair(self, radiance, irradiance, zenith, distance) -> None:
         rho = reflectance(radiance, irradiance, zenith, distance)
         back = radiance_from_reflectance(rho, irradiance, zenith, distance)
-        assert_matches_oracle(back, radiance, rtol=1e-14)
+        # a subnormal radiance has no relative precision
+        assert_matches_oracle(back, radiance, rtol=1e-14, atol=1e-300)
 
     @given(FINITE, FINITE, POSITIVE, st.floats(0.0, 84.9))
     def test_linear_in_the_radiance(self, first, second, irradiance, zenith) -> None:
@@ -102,7 +104,7 @@ class TestReflectance:
             reflectance(first, irradiance, zenith),
             reflectance(second, irradiance, zenith),
         )
-        scale = (abs(parts[0]) + abs(parts[1])) * 1e-13
+        scale = (abs(parts[0]) + abs(parts[1])) * 1e-13 + 1e-300
         assert abs(total - sum(parts)) <= scale
 
     def test_the_limit_is_85_degrees_in_either_unit(self) -> None:
