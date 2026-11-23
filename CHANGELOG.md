@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.8](https://github.com/jejjohnson/radiomax/compare/v0.0.7...v0.0.8) (2026-11-23)
+
+
+### Features
+
+* **altimetry:** tropospheric, ionospheric and inverse-barometer range corrections ([#74](https://github.com/jejjohnson/radiomax/issues/74)) ([07d1f68](https://github.com/jejjohnson/radiomax/commit/07d1f68d35eadea34ebb8ca14aa2942fa39bd2fc))
+* **sar:** calibration to σ⁰, β⁰ and γ⁰ ([#72](https://github.com/jejjohnson/radiomax/issues/72)) ([7525a33](https://github.com/jejjohnson/radiomax/commit/7525a33a858732e9d662f06117b471bf5a65b716))
+
 ## [0.0.7](https://github.com/jejjohnson/radiomax/compare/v0.0.6...v0.0.7) (2026-11-23)
 
 
