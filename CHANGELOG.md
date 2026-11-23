@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/jejjohnson/radiomax/compare/v0.0.6...v0.0.7) (2026-11-23)
+
+
+### Bug Fixes
+
+* **geometry:** the functions that call geophysix coordinates stay on their device ([#67](https://github.com/jejjohnson/radiomax/issues/67)) ([a37db36](https://github.com/jejjohnson/radiomax/commit/a37db368e5f9050d7f076daf62ae5dc01bfdfae5))
+
 ## [0.0.6](https://github.com/jejjohnson/radiomax/compare/v0.0.5...v0.0.6) (2026-11-23)
 
 
