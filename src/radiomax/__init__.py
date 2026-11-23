@@ -16,8 +16,8 @@ atmosphere.
 | `radiomax.sar` | SAR calibration |
 | `radiomax.altimetry` | altimeter range corrections |
 
-Each module appears with its first feature: `radiomax.geometry` and
-`radiomax.radiometry` exist.
+Each module appears with its first feature: `radiomax.geometry`,
+`radiomax.radiometry` and `radiomax.thermal` exist.
 """
 
 from __future__ import annotations
