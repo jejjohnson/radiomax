@@ -38,10 +38,10 @@ Private code goes in `src/radiomax/_src/<module>/<topic>.py`; the public module 
 
 In `tests/test_<module>.py`, one class per function:
 
-- **Oracle.** Against pvlib, georeader, pyproj or a stored value, with the tolerance and its source in a comment; skips when the package is missing.
+- **Oracle.** Against pvlib, georeader, pyproj, integrix, functax or a stored radtrax value, through the helpers in `tests/_oracles.py` and `assert_matches_oracle`, with the tolerance and its source in a comment; each helper skips when its package is missing.
 - **Property.** A `hypothesis` property (symmetry, monotonicity, a round trip, a limit).
-- **Gradient.** `jax.jacrev` against central differences, at the edges too; skips without JAX.
-- **Backends.** NumPy, JAX, `array_api_strict` and DataArray give the same numbers; eager, `jit` and `vmap` agree; float32 in gives float32 out.
+- **Gradient.** `assert_grad_matches_fd` in `tests/_harness.py`, at the edges too; it skips without JAX.
+- **Backends.** `assert_backends_agree` in `tests/_backends.py` (NumPy, `array_api_strict`, JAX eager and under `jit`, DataArray; float64 and float32) and `assert_traces` (`jit` and `vmap` against a loop). A linear map also has `assert_adjoint`.
 - The edges (overhead, nadir, terminator, limb, zero radiance) and each invalid argument (`match=`).
 
 ## 6. Verify
