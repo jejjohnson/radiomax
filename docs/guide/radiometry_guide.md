@@ -71,8 +71,44 @@ array([0.254, 0.246])
 
 A sample can be left out by a mask (`where`) or because it is NaN (`nan_policy="omit"`). Both sums then run over the samples that are left, so the average renormalises. With the default, `"propagate"`, any NaN among the kept samples makes every band NaN. The rules are integrix's, and the tests compare with it.
 
-The weights are an argument, so any quadrature rule fits, such as `functax.quad.simpson(wavelength).weights`. The spectrum and the responses must be on one grid: interpolating a narrow response onto a coarse grid is wrong by up to 7 % (an 8.5 nm band on a 7.4 nm grid).
+The weights are an argument, so any quadrature rule fits, such as `functax.quad.simpson(wavelength).weights`. The spectrum and the responses must be on one grid. For a response tabulated on another grid, use a response matrix.
 
 With DataArrays, `dim` names the wavelength dimension, and the result has the spectrum's other dimensions followed by the band's.
 
 [`per_nm_to_per_cm`](xref:api#radiomax.radiometry.per_nm_to_per_cm) and [`per_cm_to_per_nm`](xref:api#radiomax.radiometry.per_cm_to_per_nm) convert a spectral density. They change the values only, so an ascending wavenumber axis also needs the arrays reversed.
+
+## Response matrices
+
+A sensor's response is tabulated on one grid, usually every nanometre, and the spectrum lives on another: a hyperspectral sensor's bands, or a line-by-line grid in wavenumber. [`response_matrix`](xref:api#radiomax.radiometry.response_matrix) integrates one against the other exactly. With $R_b$ linear between the table's wavelengths and $\varphi_g$ the hat function of grid point $g$,
+
+$$
+A_{bg} = \frac{\int R_b \varphi_g \mathrm{d}\lambda}{\int R_b \mathrm{d}\lambda}
+$$
+
+so $\sum_g A_{bg} f_g$ is the band average of any spectrum that is linear between grid points, whatever the spacing.
+
+```python
+>>> table = np.linspace(1500.0, 1700.0, 201)
+>>> narrow = radiometry.gaussian_response(table, np.asarray([1560.0, 1640.0]), 8.5)
+>>> grid = np.arange(1500.0, 1700.0, 7.4)
+>>> matrix = radiometry.response_matrix(narrow, table, grid)
+>>> matrix.shape
+(2, 28)
+>>> radiometry.apply_response(matrix, grid).round(6)
+array([1560., 1640.])
+```
+
+The two usual shortcuts each fail on one side of the table's spacing. Here is the worst relative error over 25 Gaussian bands and a spectrum of 400 random lines, with a 1 nm table, against the spectrum taken as linear between its grid points:
+
+| Band, grid spacing | Response sampled on the grid | Sum over the table | `response_matrix` |
+| --- | --- | --- | --- |
+| 8.5 nm, 7.4 nm | 7.1 × 10⁻² | 1.8 × 10⁻³ | 6.3 × 10⁻⁹ |
+| 8.5 nm, 0.01 nm | 9.1 × 10⁻⁸ | 7.3 × 10⁻² | 3.8 × 10⁻⁹ |
+| 20 nm, 7.4 nm | 9.0 × 10⁻³ | 6.0 × 10⁻⁴ | 1.2 × 10⁻⁹ |
+| 20 nm, 0.01 nm | 1.2 × 10⁻⁸ | 6.3 × 10⁻² | 4.9 × 10⁻¹⁰ |
+
+No method recovers structure that the grid did not sample. On the table's own grid the exact matrix differs from a plain sum over the table, which is georeader's convention, by at most 4.1 × 10⁻⁵ relative for Landsat 8's B6 and B7 and a spectrum of lines.
+
+A band that the grid covers partly is normalised over the covered part; [`response_coverage`](xref:api#radiomax.radiometry.response_coverage) gives the share. The matrix is built once, on the host, and [`apply_response`](xref:api#radiomax.radiometry.apply_response) and its adjoint run on any backend. A wavenumber grid is passed as its wavelengths, $10^7 / \nu$.
+
+When the bands themselves move under a gradient, build the matrix on the responses' own grid with [`sampled_response_matrix`](xref:api#radiomax.radiometry.sampled_response_matrix), which traces, from [`gaussian_response`](xref:api#radiomax.radiometry.gaussian_response), [`box_response`](xref:api#radiomax.radiometry.box_response) or [`triangle_response`](xref:api#radiomax.radiometry.triangle_response).

@@ -88,7 +88,7 @@ def apply_along(
     core_dims: Mapping[str, tuple[str | None, ...]],
     *,
     dim: str | None,
-    output_dims: tuple[str, ...],
+    output_dims: tuple[str | None, ...],
 ) -> Any:
     """Call a function that consumes one named dimension on DataArrays.
 
@@ -127,7 +127,7 @@ def apply_along(
             msg = f"'{name}' has no dimension {dim!r}, only {value.dims}"
             raise ValidationError(msg)
         loop = [d for d in value.dims if d not in core_dims[name]]
-        clash = [d for d in loop if d in output_dims]
+        clash = [d for d in loop if d in output_dims and d != dim]
         if clash:
             msg = f"'{name}' already has the dimension {clash[0]!r} of the result"
             raise ValidationError(msg)

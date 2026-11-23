@@ -21,7 +21,7 @@ The diff (`git diff <base>...HEAD`, default base `main`) or the files / commit r
    - a hand-written Earth radius, flattening, h, c or k_B → `geophysix.earth`, `geophysix.constants.STANDARD`;
    - a geodetic to Earth-centred conversion → `geophysix.earth.geodetic_to_ecef`;
    - a solar angle, an Earth–Sun distance, a view angle or an air mass → `radiomax.geometry`;
-   - a counts-to-radiance, reflectance or band-average formula → `radiomax.radiometry` (planned);
+   - a counts-to-radiance, reflectance or band-average formula or a response matrix → `radiomax.radiometry`;
    - Planck's law or a brightness temperature → `radiomax.thermal` (planned);
    - an array-namespace switch or an `xr.apply_ufunc` call → `radiomax._src.backend`, `radiomax._src.labelled`;
    - a new exception class for a bad argument or an unknown array library → `ValidationError`, `BackendError`;
