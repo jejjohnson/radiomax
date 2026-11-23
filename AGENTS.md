@@ -20,7 +20,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 | `geometry` | Sun and view angles, relative azimuth, phase and scattering angles, air masses, the Earth–Sun distance, the two time arrays, the ray–ellipsoid intersection, parallax, geostationary navigation, whiskbroom scan geometry | now |
 | `radiometry` | Counts, radiance, reflectance, band averages, response matrices, spectral densities | now |
 | `thermal` | Planck's law per wavenumber, its logarithm and its views per µm and per GHz, monochromatic brightness temperature, the band inverses sensors publish | now |
-| `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, the kernel BRDF; planned: split-window temperatures, ocean colour | now |
+| `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, the kernel BRDF, split-window temperatures; planned: ocean colour | now |
 | `sar` | SAR calibration | planned |
 | `altimetry` | Altimeter range corrections | planned |
 
@@ -77,6 +77,8 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A brightness temperature from a spectral radiance | `radiomax.thermal.brightness_temperature` |
 | `K2 / log(K1 / L + 1)`, or a reader's `fk1`, `fk2`, `bc1`, `bc2` | `radiomax.thermal.brightness_temperature_band` with `PlanckLinear` or `PlanckQuadratic` |
 | A RossThick or LiSparse kernel, a kernel BRDF, an NBAR factor | `radiomax.retrievals.ross_thick`, `li_sparse_reciprocal`, `brdf_reflectance`, `nadir_adjustment` |
+| A split-window temperature or its design matrix | `radiomax.retrievals.split_window_sst`, `split_window_lst`, `split_window_features` |
+| A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
 | A frozen record that must be a JAX pytree | `@register_record` from `radiomax._src.records` |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |
 | A constant as an array of the input's dtype | `radiomax._src.backend.like` |
