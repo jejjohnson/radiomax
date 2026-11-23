@@ -17,7 +17,7 @@ atmosphere.
 | `radiomax.altimetry` | altimeter range corrections |
 
 Each module appears with its first feature: `radiomax.geometry`,
-`radiomax.radiometry` and `radiomax.thermal` exist.
+`radiomax.radiometry`, `radiomax.thermal` and `radiomax.retrievals` exist.
 """
 
 from __future__ import annotations

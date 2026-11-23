@@ -13,6 +13,7 @@ from radiomax._src.numerics import full_turn, safe_sqrt, to_radians
 
 __all__ = [
     "phase_angle",
+    "phase_radians",
     "relative_azimuth",
     "scattering_angle",
 ]
@@ -85,7 +86,10 @@ def phase_angle(
     xp, (solar, view, azimuth) = floating_inputs(
         solar_zenith, view_zenith, relative_azimuth
     )
-    angle = _phase(solar, view, azimuth, xp, degrees=degrees)
+    solar, view, azimuth = (
+        to_radians(v, xp, degrees=degrees) for v in (solar, view, azimuth)
+    )
+    angle = phase_radians(solar, view, azimuth, xp)
     return angle / like(math.pi / 180.0, angle, xp) if degrees else angle
 
 
@@ -115,22 +119,26 @@ def scattering_angle(
     xp, (solar, view, azimuth) = floating_inputs(
         solar_zenith, view_zenith, relative_azimuth
     )
-    angle = _phase(solar, view, azimuth, xp, degrees=degrees)
+    solar, view, azimuth = (
+        to_radians(v, xp, degrees=degrees) for v in (solar, view, azimuth)
+    )
+    angle = phase_radians(solar, view, azimuth, xp)
     angle = like(math.pi, angle, xp) - angle
     return angle / like(math.pi / 180.0, angle, xp) if degrees else angle
 
 
-def _phase(
-    solar: Any, view: Any, azimuth: Any, xp: ModuleType, *, degrees: bool
-) -> Any:
-    """ξ in radians, from the cross and dot products of the two unit vectors.
+def phase_radians(solar: Any, view: Any, azimuth: Any, xp: ModuleType) -> Any:
+    """ξ in radians from angles in radians, by the cross and dot products.
 
     The Sun is at (sin θₛ, 0, cos θₛ) and the sensor at
     (sin θᵥ cos ϕ, sin θᵥ sin ϕ, cos θᵥ).
+
+    Examples:
+        >>> import numpy as np
+        >>> solar, view, azimuth = np.asarray(0.5), np.asarray(0.2), np.asarray(0.0)
+        >>> round(float(phase_radians(solar, view, azimuth, np)), 12)
+        0.3
     """
-    solar = to_radians(solar, xp, degrees=degrees)
-    view = to_radians(view, xp, degrees=degrees)
-    azimuth = to_radians(azimuth, xp, degrees=degrees)
     sin_solar, cos_solar = xp.sin(solar), xp.cos(solar)
     sin_view, cos_view = xp.sin(view), xp.cos(view)
     along, across = sin_view * xp.cos(azimuth), sin_view * xp.sin(azimuth)
