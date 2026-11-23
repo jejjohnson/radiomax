@@ -29,7 +29,7 @@ uv run poe install
 
 ## Status
 
-Wave 0: the package skeleton and the exception hierarchy ([`RadiomaxError`](xref:api#radiomax.RadiomaxError)). The public modules are planned; see the [API reference](xref:api#radiomax) for the list.
+The public modules [`geometry`](xref:api#radiomax.geometry), [`radiometry`](xref:api#radiomax.radiometry), [`thermal`](xref:api#radiomax.thermal) and [`retrievals`](xref:api#radiomax.retrievals) are built (Waves 0 to 3). `sar` and `altimetry` are planned.
 
 ## Design rules
 

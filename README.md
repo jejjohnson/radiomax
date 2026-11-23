@@ -29,7 +29,7 @@ uv pip install "geophysix @ git+https://github.com/jejjohnson/geophysix@v0.0.4" 
 
 ## Status
 
-Wave 0: the package skeleton and its exception hierarchy. The public modules `geometry`, `radiometry`, `thermal`, `retrievals`, `sar` and `altimetry` are planned and built by the feature issues.
+The public modules `geometry`, `radiometry`, `thermal` and `retrievals` are built (Waves 0 to 3). `sar` and `altimetry` are planned.
 
 ## Design
 
