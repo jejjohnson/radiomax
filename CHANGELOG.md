@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.5](https://github.com/jejjohnson/radiomax/compare/v0.0.4...v0.0.5) (2026-11-23)
+
+
+### Features
+
+* **retrievals:** the Ross–Li kernels from cosines, for radtrax's geometry ([#60](https://github.com/jejjohnson/radiomax/issues/60)) ([965fe71](https://github.com/jejjohnson/radiomax/commit/965fe71e8291736b8d2b1198c4b03fb356d1f52a))
+
+
+### Bug Fixes
+
+* **backend:** host values go to the input's device, and torch tensors keep their gradients ([#59](https://github.com/jejjohnson/radiomax/issues/59)) ([ff34156](https://github.com/jejjohnson/radiomax/commit/ff34156bf127a62eb2603c418ce622bd89141bf9))
+
 ## [0.0.4](https://github.com/jejjohnson/radiomax/compare/v0.0.3...v0.0.4) (2026-11-23)
 
 
