@@ -123,6 +123,18 @@ def test_several_outputs_are_a_tuple_of_dataarrays(xr) -> None:
     assert length.values.tolist() == [np.hypot(3.0, 7.0), 4.0]
 
 
+def test_an_output_that_ignores_an_input_still_has_its_dimension(xr) -> None:
+    @elementwise(n_outputs=2)
+    def both_and_first(x, y):
+        return x + y, 2.0 * x
+
+    x = xr.DataArray(np.arange(3.0), dims="x")
+    y = xr.DataArray(np.arange(2.0), dims="y")
+    total, first = both_and_first(x, y)
+    assert total.dims == first.dims == ("x", "y")
+    assert first.values[:, 0].tolist() == first.values[:, 1].tolist() == [0.0, 2.0, 4.0]
+
+
 def test_several_outputs_of_plain_arrays() -> None:
     length, bearing = polar(np.asarray([0.0]), np.asarray([2.0]))
     assert (length.tolist(), bearing.tolist()) == ([2.0], [0.0])

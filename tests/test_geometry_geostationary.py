@@ -225,3 +225,15 @@ def test_a_fixed_grid_of_dataarrays() -> None:
     lon, lat, visible = geostationary_lonlat(x, y, lon_0=0.0, height=HEIGHT, sweep="y")
     assert set(lon.dims) == set(lat.dims) == set(visible.dims) == {"y", "x"}
     assert visible.all()
+
+
+def test_a_satellite_per_scene_of_dataarrays() -> None:
+    # the latitude does not depend on the sub-satellite longitude
+    xr = pytest.importorskip("xarray")
+    x = xr.DataArray(np.linspace(-0.1, 0.1, 5), dims="x")
+    lon_0 = xr.DataArray([-75.2, 0.0, 140.7], dims="scene")
+    lon, lat, visible = geostationary_lonlat(
+        x, 0.05, lon_0=lon_0, height=HEIGHT, sweep="y"
+    )
+    assert lon.dims == lat.dims == visible.dims == ("x", "scene")
+    assert_matches_oracle(lat.values[:, 0], lat.values[:, 2], rtol=0.0)
