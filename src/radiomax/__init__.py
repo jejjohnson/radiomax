@@ -24,7 +24,7 @@ from __future__ import annotations
 from radiomax.exceptions import BackendError, RadiomaxError, ValidationError
 
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 __all__ = [
     "BackendError",
