@@ -11,10 +11,10 @@ import array_api_strict as strict
 import pytest
 from _backends import HAS_TORCH
 
-from radiomax import geometry, radiometry, retrievals, thermal
+from radiomax import geometry, radiometry, retrievals, sar, thermal
 
 
-MODULES = (geometry, radiometry, thermal, retrievals)
+MODULES = (geometry, radiometry, thermal, retrievals, sar)
 SECOND = strict.Device("device1")
 
 #: Functions that return NumPy whatever they are given, or take no array.
@@ -154,6 +154,11 @@ CALLS: dict[str, Callable[[Make], Any]] = {
     "split_window_sst": lambda m: retrievals.split_window_sst(
         m([300.0, 290.0]), 289.0, 40.0, [1.0, 1.0, 2.0, 0.5]
     ),
+    "beta0_to_sigma0": lambda m: sar.beta0_to_sigma0(m([0.1, 0.2]), 40.0),
+    "dn_to_backscatter": lambda m: sar.dn_to_backscatter(m([100.0, 200.0]), 300.0),
+    "gamma0_to_sigma0": lambda m: sar.gamma0_to_sigma0(m([0.1, 0.2]), 40.0),
+    "sigma0_to_beta0": lambda m: sar.sigma0_to_beta0(m([0.1, 0.2]), 40.0),
+    "sigma0_to_gamma0": lambda m: sar.sigma0_to_gamma0(m([0.1, 0.2]), 40.0),
 }
 
 

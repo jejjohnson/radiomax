@@ -22,6 +22,7 @@ SUBMODULES = [
     "geometry",
     "radiometry",
     "retrievals",
+    "sar",
     "thermal",
 ]
 
