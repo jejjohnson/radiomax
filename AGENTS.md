@@ -18,7 +18,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 | `_typing.py` | The `ArrayLike` type alias | now |
 | `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclasses `BackendError`, `ValidationError` | now |
 | `geometry` | Sun and view angles, relative azimuth, phase and scattering angles, air masses, the Earth–Sun distance, the two time arrays; planned: parallax, navigation, scan geometry | now |
-| `radiometry` | Counts, radiance, reflectance, band averages, spectral densities; planned: response matrices | now |
+| `radiometry` | Counts, radiance, reflectance, band averages, response matrices, spectral densities | now |
 | `thermal` | Planck's law and monochromatic brightness temperature, and the band inverses sensors publish | planned |
 | `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, split-window temperatures, ocean colour | planned |
 | `sar` | SAR calibration | planned |
@@ -68,7 +68,8 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`, `safe_sqrt`, `safe_atan2` |
 | `gain * dn + offset`, `pi * L * d**2 / (E0 * cos(sza))` or its inverse | `radiomax.radiometry.counts_to_radiance`, `radiance_to_counts`, `counts_to_reflectance`, `reflectance`, `radiance_from_reflectance` |
 | A trapezoid sum over a spectral response, a band irradiance, `E * wl**2 / 1e7` | `radiomax.radiometry.band_average`, `band_irradiance`, `trapezoid_weights`, `per_nm_to_per_cm`, `per_cm_to_per_nm` |
-| A response on another grid than its table | `radiomax.radiometry` (planned) |
+| A response on another grid than its table, an interpolated response times a spectrum | `radiomax.radiometry.response_matrix` (exact, host), `apply_response`, `apply_response_adjoint`, `response_coverage` |
+| A Gaussian, box or triangular response, rows normalised to 1, a band centre or width | `radiomax.radiometry.gaussian_response`, `box_response`, `triangle_response`, `sampled_response_matrix`, `band_centre`, `equivalent_width` |
 | Planck's law or a brightness temperature | `radiomax.thermal` (planned) |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |
 | A constant as an array of the input's dtype | `radiomax._src.backend.like` |

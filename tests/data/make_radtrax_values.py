@@ -22,6 +22,7 @@ def values() -> dict[str, np.ndarray]:
     jax.config.update("jax_enable_x64", True)
     from radtrax.atmosphere import ViewingGeometry
     from radtrax.atmosphere.geometry import _shell_air_mass, air_mass_factor
+    from radtrax.geo.landsat import _rsr_table
     from radtrax.instrument import GaussianInstrument
     from radtrax.radiometry import (
         brightness_temperature,
@@ -88,6 +89,11 @@ def values() -> dict[str, np.ndarray]:
         out["response_fwhm_nm"],
     )
     out["response_matrix"] = instrument.response()
+    # --- the Landsat 8 OLI responses radtrax bundles (USGS, 1 nm tables) ---
+    for band in ("B6", "B7"):
+        wavelength, response = _rsr_table()["L8", band]
+        out[f"landsat_{band.lower()}_wavelength_nm"] = wavelength
+        out[f"landsat_{band.lower()}_response"] = response
     # --- the Earth–Sun distance formula that radiomax does not use ---
     out["distance_day_of_year"] = np.linspace(1.0, 366.0, 74)
     out["distance"] = earth_sun_distance(out["distance_day_of_year"])
