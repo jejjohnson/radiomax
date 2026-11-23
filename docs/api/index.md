@@ -13,7 +13,7 @@ The public API is the set of public modules below, plus the exceptions that `rad
 | `radiomax.sar` | SAR calibration | planned |
 | `radiomax.altimetry` | Altimeter range corrections | planned |
 | [Type aliases](typing.md) | `ArrayLike` | available |
-| [Exceptions](exceptions.md) | `RadiomaxError`, `ValidationError` | available |
+| [Exceptions](exceptions.md) | `RadiomaxError`, `BackendError`, `ValidationError` | available |
 
 ## Package overview
 
