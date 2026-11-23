@@ -21,6 +21,7 @@ SUBMODULES = [
     "exceptions",
     "geometry",
     "radiometry",
+    "retrievals",
     "thermal",
 ]
 

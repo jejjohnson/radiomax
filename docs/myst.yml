@@ -38,6 +38,7 @@ project:
         - file: guide/navigation_guide.md
         - file: guide/radiometry_guide.md
         - file: guide/thermal_guide.md
+        - file: guide/retrievals_guide.md
     - title: Project
       children:
         - file: contributing.md

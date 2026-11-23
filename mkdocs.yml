@@ -75,6 +75,7 @@ nav:
   - Geometry: geometry.md
   - Radiometry: radiometry.md
   - Thermal: thermal.md
+  - Retrievals: retrievals.md
   - Type aliases: typing.md
   - Exceptions: exceptions.md
 

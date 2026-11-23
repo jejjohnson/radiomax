@@ -23,6 +23,7 @@ The diff (`git diff <base>...HEAD`, default base `main`) or the files / commit r
    - a solar angle, an Earth–Sun distance, a view angle, an air mass, a ray–ellipsoid intersection, a parallax, geostationary navigation or whiskbroom scan geometry → `radiomax.geometry`;
    - a counts-to-radiance, reflectance or band-average formula or a response matrix → `radiomax.radiometry`;
    - Planck's law, a brightness temperature, or a radiance per cm⁻¹ as one per µm or per GHz → `radiomax.thermal`;
+   - a BRDF kernel, a split-window or an ocean-colour formula → `radiomax.retrievals`;
    - an array-namespace switch or an `xr.apply_ufunc` call → `radiomax._src.backend`, `radiomax._src.labelled`;
    - a new exception class for a bad argument or an unknown array library → `ValidationError`, `BackendError`;
    - a public name that duplicates another public name for a different object (`tests/test_capabilities.py` will fail on it).
