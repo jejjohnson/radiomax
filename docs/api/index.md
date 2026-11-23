@@ -6,7 +6,7 @@ The public API is the set of public modules below, plus the exceptions that `rad
 
 | Module | Contents | Status |
 |---|---|---|
-| [`radiomax.geometry`](geometry.md) | Sun and view angles, the Earth–Sun distance, phase and scattering angles, air masses, ray–ellipsoid intersection, parallax, geostationary navigation; scan geometry is planned | in progress |
+| [`radiomax.geometry`](geometry.md) | Sun and view angles, the Earth–Sun distance, phase and scattering angles, air masses, ray–ellipsoid intersection, parallax, geostationary navigation, whiskbroom scan geometry | available |
 | [`radiomax.radiometry`](radiometry.md) | Counts, radiance, reflectance, band averages, response matrices, spectral densities | available |
 | [`radiomax.thermal`](thermal.md) | Planck's law per wavenumber, its logarithm, and its views per µm and per GHz, monochromatic brightness temperature, and the band inverses sensors publish coefficients for | available |
 | `radiomax.retrievals` | Empirical formulas with given coefficients | planned |
