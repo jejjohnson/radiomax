@@ -76,6 +76,7 @@ nav:
   - Radiometry: radiometry.md
   - Thermal: thermal.md
   - Retrievals: retrievals.md
+  - SAR: sar.md
   - Type aliases: typing.md
   - Exceptions: exceptions.md
 
