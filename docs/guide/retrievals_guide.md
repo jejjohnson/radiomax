@@ -91,4 +91,4 @@ where $r = \log_{10}(\max R_{blue} / R_{green})$.
 array([0.558, 1.153])
 ```
 
-[`OCX_R2022`](xref:api#radiomax.retrievals) holds the coefficients of NASA's 2022 reprocessing for twelve sensors, each record with the algorithm's name, its bands and where the numbers were read. NASA's standard product uses this formula above 0.35 mg m⁻³; below 0.25 mg m⁻³ it uses another (the colour index), with a blend between. Any other coefficients are passed the same way, as a sequence or an array.
+[`OCX_R2022`](xref:api#radiomax.retrievals.OCX_R2022) holds the coefficients of NASA's 2022 reprocessing for twelve sensors, each record with the algorithm's name, its bands and where the numbers were read. NASA's standard product uses this formula above 0.35 mg m⁻³; below 0.25 mg m⁻³ it uses another (the colour index), with a blend between. Any other coefficients are passed the same way, as a sequence or an array.

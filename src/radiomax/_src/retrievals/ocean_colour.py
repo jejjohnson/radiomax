@@ -220,5 +220,10 @@ def _ocx_r2022() -> Mapping[str, BandRatioTable]:
     )
 
 
-#: NASA's OCx coefficients of its 2022 reprocessing, by sensor.
 OCX_R2022: Mapping[str, BandRatioTable] = _ocx_r2022()
+"""NASA's OCx coefficients of its 2022 reprocessing, by sensor.
+
+Read-only. Its keys are SeaWiFS, MODIS, VIIRS-SNPP, VIIRS-NOAA20,
+VIIRS-NOAA21, PACE OCI, MERIS, OCTS, GOCI, HAWKEYE, OLCI and CZCS, as the
+source names them; each record says where its numbers were read.
+"""
