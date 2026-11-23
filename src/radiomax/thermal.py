@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+from radiomax._src.thermal.band import (
+    PlanckLinear,
+    PlanckQuadratic,
+    brightness_temperature_band,
+)
 from radiomax._src.thermal.brightness import brightness_temperature
 from radiomax._src.thermal.planck import (
     from_per_ghz,
@@ -14,7 +19,10 @@ from radiomax._src.thermal.planck import (
 
 
 __all__ = [
+    "PlanckLinear",
+    "PlanckQuadratic",
     "brightness_temperature",
+    "brightness_temperature_band",
     "from_per_ghz",
     "from_per_um",
     "log_planck_radiance",
