@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.6](https://github.com/jejjohnson/radiomax/compare/v0.0.5...v0.0.6) (2026-11-23)
+
+
+### Features
+
+* **geometry:** the on-Earth mask of a geostationary disk, alone ([#66](https://github.com/jejjohnson/radiomax/issues/66)) ([486ad55](https://github.com/jejjohnson/radiomax/commit/486ad554ec96b00438dcc6278b203bdacae06e83))
+
+
+### Bug Fixes
+
+* **labelled:** an output that ignores an input keeps its dimension ([#62](https://github.com/jejjohnson/radiomax/issues/62)) ([8e2137b](https://github.com/jejjohnson/radiomax/commit/8e2137b235de1181de006dacb79f55db47a3277a))
+
 ## [0.0.5](https://github.com/jejjohnson/radiomax/compare/v0.0.4...v0.0.5) (2026-11-23)
 
 
