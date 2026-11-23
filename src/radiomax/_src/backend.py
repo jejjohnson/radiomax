@@ -1,4 +1,4 @@
-"""Array plumbing: one namespace and one floating dtype per call, on any array library.
+"""Array plumbing: one namespace, dtype and device per call, on any array library.
 
 A function computes in the namespace of its inputs: NumPy in gives NumPy out,
 JAX in gives JAX out, and the same for every array-API library that
@@ -20,9 +20,11 @@ from radiomax.exceptions import BackendError, ValidationError
 
 __all__ = [
     "array_namespace",
+    "device_of",
     "floating_inputs",
     "is_host",
     "like",
+    "place",
 ]
 
 # Values that live on the host and join whatever library the others are from.
@@ -83,6 +85,54 @@ def array_namespace(*values: Any) -> ModuleType:
     return numpy_namespace
 
 
+def device_of(value: Any, xp: ModuleType) -> Any:
+    """The device an array is on, or ``None`` if it does not say where to compute.
+
+    Host values join any device. So do JAX's arrays: a tracer has no device,
+    and a constant that JAX has not committed to one goes where it is used.
+
+    Examples:
+        >>> import array_api_strict as strict
+        >>> device_of(
+        ...     strict.asarray([1.0], device=strict.Device("device1")), strict
+        ... )
+        array_api_strict.Device('device1')
+        >>> device_of(1.0, strict) is None
+        True
+    """
+    if is_host(value) or array_api_compat.is_jax_namespace(xp):
+        return None
+    return array_api_compat.device(value)
+
+
+def place(value: Any, xp: ModuleType, dtype: Any, device: Any) -> Any:
+    """``value`` as an array of a dtype, on a device.
+
+    An array that already belongs to the library keeps its device and, where
+    the dtype matches, its identity: ``asarray`` would detach a torch tensor
+    from its graph in some versions (2.5 and 2.10 among them).
+
+    Args:
+        value: A number, a sequence, a NumPy array or an array of ``xp``.
+        xp: The namespace.
+        dtype: The dtype of the result.
+        device: Where a host value goes; ``None`` for the default device.
+
+    Returns:
+        The array.
+
+    Examples:
+        >>> import numpy as np
+        >>> place([1, 2], np, np.float32, None)
+        array([1., 2.], dtype=float32)
+    """
+    if not is_host(value):
+        return xp.astype(value, dtype, copy=False)
+    if device is None:
+        return xp.asarray(value, dtype=dtype)
+    return xp.asarray(value, dtype=dtype, device=device)
+
+
 def floating_inputs(
     *values: Any, params: tuple[Any, ...] = ()
 ) -> tuple[ModuleType, list[Any]]:
@@ -90,12 +140,14 @@ def floating_inputs(
 
     The dtype is the common one of the floating arrays (float32 stays
     float32). Python numbers and integer or boolean arrays adopt it; with no
-    floating array, everything takes the namespace's default float.
+    floating array, everything takes the namespace's default float. Host
+    values go to the device of the other arrays.
 
     Args:
         *values: The array inputs: arrays, sequences or Python numbers.
-        params: Record fields. They help to choose the namespace, so a traced
-            JAX scalar in a record selects JAX, and never decide the dtype.
+        params: Record fields. They help to choose the namespace and the
+            device, so a traced JAX scalar in a record selects JAX, and never
+            decide the dtype.
 
     Returns:
         The namespace, and ``values`` as arrays of one floating dtype.
@@ -114,30 +166,31 @@ def floating_inputs(
         dtype('float64')
     """
     xp = array_namespace(*values, *params)
-    arrays = [value if _is_number(value) else xp.asarray(value) for value in values]
+    devices = (device_of(value, xp) for value in (*values, *params))
+    device = next((found for found in devices if found is not None), None)
     floating = []
-    for array in arrays:
-        if _is_number(array):
+    for value in values:
+        if _is_number(value):
             continue
-        if xp.isdtype(array.dtype, "real floating"):
-            floating.append(array.dtype)
-        elif not xp.isdtype(array.dtype, ("bool", "integral")):
-            msg = f"inputs must be real numbers, got dtype {array.dtype}"
+        dtype = xp.asarray(value).dtype if is_host(value) else value.dtype
+        if xp.isdtype(dtype, "real floating"):
+            floating.append(dtype)
+        elif not xp.isdtype(dtype, ("bool", "integral")):
+            msg = f"inputs must be real numbers, got dtype {dtype}"
             raise ValidationError(msg)
-    default = xp.asarray(0.0).dtype
-    dtype = xp.result_type(*floating) if floating else default
-    return xp, [xp.asarray(array, dtype=dtype) for array in arrays]
+    dtype = xp.result_type(*floating) if floating else xp.asarray(0.0).dtype
+    return xp, [place(value, xp, dtype, device) for value in values]
 
 
 def like(value: Any, ref: Any, xp: ModuleType) -> Any:
-    """``value`` (a number or a 0-d array) as an array of ``ref``'s dtype.
+    """``value`` (a number or an array) with ``ref``'s dtype, on ``ref``'s device.
 
     Examples:
         >>> import numpy as np
         >>> like(0.1, np.zeros(2, dtype=np.float32), np).dtype
         dtype('float32')
     """
-    return xp.asarray(value, dtype=ref.dtype)
+    return place(value, xp, ref.dtype, device_of(ref, xp))
 
 
 def _is_number(value: Any) -> bool:

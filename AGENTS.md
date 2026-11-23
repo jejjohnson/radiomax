@@ -82,7 +82,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
 | A frozen record that must be a JAX pytree | `@register_record` from `radiomax._src.records` |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |
-| A constant as an array of the input's dtype | `radiomax._src.backend.like` |
+| A constant as an array of the input's dtype, on its device | `radiomax._src.backend.like`; `place` for a value that is not a float |
 | `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` from `radiomax._src.labelled`, `apply_along` for a function that consumes a named dimension, `is_dataarray` |
 | A new exception for a bad argument, or for an unknown array library | `ValidationError`, `BackendError` |
 
@@ -94,7 +94,7 @@ Everything composes because it keeps these contracts; the tests in "What enforce
 
 These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/15), where the measurements behind them are.
 
-- **Arrays.** One implementation in functions of the Python array API standard. The namespace comes from the input: NumPy in gives NumPy out, JAX in gives JAX out, and the same for CuPy and any array-API library. JAX and xarray are never imported at module level. `xp, (x, y) = floating_inputs(x, y)` opens every function; a NumPy array joins the other library, and two other libraries in one call raise `BackendError`.
+- **Arrays.** One implementation in functions of the Python array API standard. The namespace comes from the input: NumPy in gives NumPy out, JAX in gives JAX out, and the same for CuPy and any array-API library. JAX and xarray are never imported at module level. `xp, (x, y) = floating_inputs(x, y)` opens every function; a NumPy array joins the other library, and two other libraries in one call raise `BackendError`. Host values go to the arrays' device, and an array that already belongs to the library is never passed to `asarray`, which detaches a torch tensor in some versions.
 - **xarray.** A DataArray in gives a DataArray out, through `xr.apply_ufunc`, with dimensions aligned by name; `@elementwise` does it. An unlabelled array with dimensions next to a DataArray raises `ValidationError`, and the result has no name and no attributes.
 - **dtype.** float32 stays float32; integer arrays become the namespace's default float; constants enter in the input's dtype.
 - **Units.** SI, with two named exceptions: angles are degrees by default (`degrees=False` for radians), never guessed from the magnitude, and spectral code uses wavenumber in cm⁻¹, in arguments named `wavenumber_cm`.
@@ -131,6 +131,8 @@ Most rules here are tests, so CI tells you when one breaks. Read a test's docstr
 | `tests/test_build_docs.py` | The two-tool docs pipeline: inventory parsing, anchor repair, link checking, the inventory port and the absolute nav URL in `docs/myst.yml`, the files copied to the site root (`ROOT_FILES`) |
 | `tests/conftest.py` | `jax_enable_x64` is on whenever JAX is importable |
 | `tests/test_harness.py` | The harness itself: each check in `tests/_harness.py` and `tests/_backends.py` passes on a right function and fails on a wrong one, each reference in `tests/_oracles.py` agrees with a closed form, and the stored radtrax values are what their names say |
+| `tests/test_devices.py` | Every public function returns on its input's device, never rebuilds an array of the library, and keeps torch's gradients; a new function joins `CALLS` |
+| CI job "with torch 2.10" | The suite on torch, in a version whose `asarray` detaches |
 | CI job "without JAX and xarray" | The base install imports and passes the tests with neither installed |
 | `[tool.coverage.report] fail_under = 90` | Coverage of `src/radiomax` in every coverage-enabled run (CI, `uv run poe test-cov`) |
 | `strict_markers = true` | Only the registered tier markers (`slow`, `integration`) exist |
