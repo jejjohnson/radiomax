@@ -59,6 +59,8 @@ array([28.235, 27.489, 28.235,    nan])
 
 The last angle misses the Earth, so it is NaN. `sweep` says which axis the instrument sweeps along, and it has no default, because the wrong one is off by kilometres and looks right: `"x"` for GOES ABI, `"y"` for Himawari AHI, MTG FCI and SEVIRI.
 
+When only the mask matters (to fill the space around the disk), [`geostationary_on_earth`](xref:api#radiomax.geometry.geostationary_on_earth) returns it without the positions, which is several times faster.
+
 [`geostationary_scan_angles`](xref:api#radiomax.geometry.geostationary_scan_angles) is the inverse, for finding the pixel that sees a place. It is NaN where the satellite is below the place's horizon:
 
 ```python

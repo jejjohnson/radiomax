@@ -10,6 +10,7 @@ from radiomax._src.geometry.angles import (
 )
 from radiomax._src.geometry.geostationary import (
     geostationary_lonlat,
+    geostationary_on_earth,
     geostationary_scan_angles,
 )
 from radiomax._src.geometry.intersection import earth_intersection
@@ -36,6 +37,7 @@ __all__ = [
     "earth_intersection",
     "earth_sun_distance",
     "geostationary_lonlat",
+    "geostationary_on_earth",
     "geostationary_scan_angles",
     "phase_angle",
     "relative_azimuth",

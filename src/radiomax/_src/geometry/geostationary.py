@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from types import ModuleType
 from typing import Any, Literal
 
 from geophysix.earth import WGS84, Ellipsoid, ecef_to_geodetic, geodetic_to_ecef
@@ -16,6 +17,7 @@ from radiomax.exceptions import ValidationError
 
 __all__ = [
     "geostationary_lonlat",
+    "geostationary_on_earth",
     "geostationary_scan_angles",
 ]
 
@@ -86,13 +88,7 @@ def geostationary_lonlat(
     xp, (x, y, lon_0, height) = floating_inputs(
         x, y, lon_0, height, params=(earth.semi_major, earth.flattening)
     )
-    sin_x, cos_x, sin_y, cos_y = xp.sin(x), xp.cos(x), xp.sin(y), xp.cos(y)
-    # d, towards the Earth's centre, east and north
-    inward = cos_x * cos_y
-    if sweep == "x":
-        east, north = sin_x, cos_x * sin_y
-    else:
-        east, north = sin_x * cos_y, sin_y
+    inward, east, north = _line_of_sight(x, y, sweep, xp)
     zero = xp.zeros_like(inward)
     # the satellite, at a + h on the first axis
     distance = zero + like(earth.semi_major, inward, xp) + height
@@ -178,6 +174,64 @@ def geostationary_scan_angles(
         y = xp.atan2(pz, safe_sqrt(inward**2 + py**2, xp))
     nan = like(xp.nan, x, xp)
     return xp.where(visible, x, nan), xp.where(visible, y, nan), visible
+
+
+@elementwise()
+def geostationary_on_earth(
+    x: Any,
+    y: Any,
+    *,
+    height: Any,
+    sweep: Literal["x", "y"],
+    earth: Ellipsoid = WGS84,
+) -> Any:
+    """Whether a geostationary imager's line of sight meets the Earth.
+
+    (o̲·d̲)² ≥ |d̲|² (|o̲|² − 1), in units of the semi-axes
+
+    with o the satellite and d the line of sight of `geostationary_lonlat`,
+    whose third output this is, without the cost of the positions.
+
+    Args:
+        x: Scan angle x, positive east, rad.
+        y: Scan angle y, positive north, rad.
+        height: The satellite's height h above the equator, m.
+        sweep: The axis the instrument sweeps along, ``"x"`` for GOES ABI and
+            ``"y"`` for AHI, FCI and SEVIRI.
+        earth: The body; WGS84 by default.
+
+    Returns:
+        True where the line of sight meets the Earth.
+
+    Raises:
+        ValidationError: If ``sweep`` is neither ``"x"`` nor ``"y"``.
+
+    Examples:
+        >>> import numpy as np
+        >>> from radiomax.geometry import geostationary_on_earth
+        >>> x = np.asarray([0.0, 0.151, 0.153])
+        >>> geostationary_on_earth(x, 0.0, height=35786023.0, sweep="x").tolist()
+        [True, True, False]
+    """
+    _check_sweep(sweep)
+    xp, (x, y, height) = floating_inputs(
+        x, y, height, params=(earth.semi_major, earth.flattening)
+    )
+    inward, east, north = _line_of_sight(x, y, sweep, xp)
+    a, b = like(earth.semi_major, inward, xp), like(earth.semi_minor, inward, xp)
+    # o̲ = ((a + h) / a, 0, 0), and d̲ in units of the semi-axes
+    origin = (a + height) / a
+    length_squared = (inward**2 + east**2) / a**2 + (north / b) ** 2
+    along = origin * inward / a
+    return along**2 >= length_squared * (origin**2 - 1.0)
+
+
+def _line_of_sight(x: Any, y: Any, sweep: str, xp: ModuleType) -> tuple[Any, Any, Any]:
+    """d, towards the Earth's centre, east and north."""
+    sin_x, cos_x, sin_y, cos_y = xp.sin(x), xp.cos(x), xp.sin(y), xp.cos(y)
+    if sweep == "x":
+        return cos_x * cos_y, sin_x, cos_x * sin_y
+    return cos_x * cos_y, sin_x * cos_y, sin_y
 
 
 def _check_sweep(sweep: str) -> None:

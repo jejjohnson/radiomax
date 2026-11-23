@@ -65,7 +65,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A solar zenith angle, a declination, an Earth–Sun distance, a Julian date | `radiomax.geometry.solar_angles`, `solar_zenith`, `solar_declination`, `earth_sun_distance`, `utc_day_seconds` |
 | A view zenith from a satellite's position, `arccos(cos(vaa - saa))`, a phase or scattering angle | `radiomax.geometry.view_angles`, `relative_azimuth`, `phase_angle`, `scattering_angle` |
 | `1 / cos(sza) + 1 / cos(vza)`, a Chapman or spherical air mass | `radiomax.geometry.air_mass_factor`, `shell_air_mass` |
-| Scan angles to longitude and latitude, an off-Earth mask of a geostationary disk | `radiomax.geometry.geostationary_lonlat`, `geostationary_scan_angles` |
+| Scan angles to longitude and latitude, an off-Earth mask of a geostationary disk | `radiomax.geometry.geostationary_lonlat`, `geostationary_scan_angles`, `geostationary_on_earth` |
 | A whiskbroom's scan angles, pixel growth or bowtie | `radiomax.geometry.scan_angles`, `scan_pixel_growth`, `bowtie_detector_positions` |
 | The quadratic of a line of sight and the Earth, a parallax shift | `radiomax.geometry.earth_intersection`, `apparent_position`; `near_root` from `radiomax._src.geometry.intersection` inside the package |
 | `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`, `safe_sqrt`, `safe_atan2` |
