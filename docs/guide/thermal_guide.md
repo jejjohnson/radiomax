@@ -69,3 +69,32 @@ array([290.33, 287.85, 287.41])
 ```
 
 Noise can make the radiance of a cold, dark pixel negative. Such a pixel has no brightness temperature and is NaN, and the gradient of its neighbours stays finite.
+
+## Band coefficients
+
+A sensor's band is wider than one wavenumber, and its operator publishes coefficients that correct for it. The record we pass says which formula they belong to: [`PlanckLinear`](xref:api#radiomax.thermal.PlanckLinear) for GOES and Landsat, [`PlanckQuadratic`](xref:api#radiomax.thermal.PlanckQuadratic) for Himawari.
+
+$$
+T = \frac{1}{b_2} \left(\frac{f_{k2}}{\ln(f_{k1} / L + 1)} - b_1\right)
+$$
+
+Landsat's $T = K_2 / \ln(K_1 / L + 1)$ is the same with the defaults $b_1 = 0$ and $b_2 = 1$. With Landsat 8's band 10:
+
+```python
+>>> band10 = thermal.PlanckLinear(fk1=774.8853, fk2=1321.0789)
+>>> landsat = np.asarray([7.0, 9.0, 11.0, -0.1])
+>>> thermal.brightness_temperature_band(landsat, band10).round(2)
+array([280.14, 295.74, 309.46,    nan])
+```
+
+With several bands the fields are arrays that broadcast against the radiance, `(band, 1, 1)` against a `(band, y, x)` cube, or DataArrays on the band dimension, which align by name. Under JAX a record is a pytree, so a gradient with respect to a coefficient is a record of the same type:
+
+```python
+>>> import jax
+>>> jax.config.update("jax_enable_x64", True)
+>>> sensitivity = jax.grad(lambda record: thermal.brightness_temperature_band(9.0, record))
+>>> round(float(sensitivity(band10).fk2), 4)  # K per K
+0.2239
+```
+
+`PlanckQuadratic` takes the radiance per metre, $10^6$ times the radiance per µm, and a Himawari file carries its own $h$, $c$ and $k_B$: we pass them as `constants=`, a [geophysix](https://github.com/jejjohnson/geophysix) `Constants` record.
