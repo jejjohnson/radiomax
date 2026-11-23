@@ -17,7 +17,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 |---|---|---|
 | `_typing.py` | The `ArrayLike` type alias | now |
 | `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclasses `BackendError`, `ValidationError` | now |
-| `geometry` | Sun and view angles, the Earth–Sun distance, air masses, parallax, navigation, scan geometry | planned |
+| `geometry` | Sun angles and the Earth–Sun distance, the two time arrays; planned: view angles, air masses, parallax, navigation, scan geometry | now |
 | `radiometry` | Counts, radiance, reflectance, response matrices, band averages, spectral densities | planned |
 | `thermal` | Planck's law and monochromatic brightness temperature, and the band inverses sensors publish | planned |
 | `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, split-window temperatures, ocean colour | planned |
@@ -62,7 +62,9 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 |---|---|
 | A hand-written Earth radius, flattening, h, c or k_B | `geophysix.earth.WGS84`, `SPHERE`, `geophysix.constants.STANDARD` |
 | Geodetic to Earth-centred coordinates or back | `geophysix.earth.geodetic_to_ecef`, `ecef_to_geodetic` |
-| A solar zenith angle, an Earth–Sun distance, a view angle, an air mass | `radiomax.geometry` (planned) |
+| A solar zenith angle, a declination, an Earth–Sun distance, a Julian date | `radiomax.geometry.solar_angles`, `solar_zenith`, `solar_declination`, `earth_sun_distance`, `utc_day_seconds` |
+| A view angle, an air mass | `radiomax.geometry` (planned) |
+| `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`, `safe_sqrt`, `safe_atan2` |
 | `gain * dn + offset`, `pi * L * d**2 / (E0 * cos(sza))`, a trapezoid sum over a spectral response | `radiomax.radiometry` (planned) |
 | Planck's law or a brightness temperature | `radiomax.thermal` (planned) |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |

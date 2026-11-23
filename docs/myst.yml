@@ -32,6 +32,9 @@ project:
     '\op': '\mathrm{#1}'
   toc:
     - file: index.md
+    - title: Guide
+      children:
+        - file: guide/geometry_guide.md
     - title: Project
       children:
         - file: contributing.md
