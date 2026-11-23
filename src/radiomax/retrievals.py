@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 from radiomax._src.retrievals.brdf import brdf_reflectance, nadir_adjustment
-from radiomax._src.retrievals.kernels import li_sparse_reciprocal, ross_thick
+from radiomax._src.retrievals.kernels import (
+    li_sparse_reciprocal,
+    li_sparse_reciprocal_from_cosines,
+    ross_thick,
+    ross_thick_from_cosines,
+)
 from radiomax._src.retrievals.ocean_colour import (
     OCX_R2022,
     BandRatioTable,
@@ -22,8 +27,10 @@ __all__ = [
     "band_ratio_chlorophyll",
     "brdf_reflectance",
     "li_sparse_reciprocal",
+    "li_sparse_reciprocal_from_cosines",
     "nadir_adjustment",
     "ross_thick",
+    "ross_thick_from_cosines",
     "split_window_features",
     "split_window_lst",
     "split_window_sst",

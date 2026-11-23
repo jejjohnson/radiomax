@@ -76,7 +76,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | Planck's law, a radiance per cm⁻¹ as one per µm or per GHz | `radiomax.thermal.planck_radiance`, `log_planck_radiance`, `to_per_um`, `from_per_um`, `to_per_ghz`, `from_per_ghz` |
 | A brightness temperature from a spectral radiance | `radiomax.thermal.brightness_temperature` |
 | `K2 / log(K1 / L + 1)`, or a reader's `fk1`, `fk2`, `bc1`, `bc2` | `radiomax.thermal.brightness_temperature_band` with `PlanckLinear` or `PlanckQuadratic` |
-| A RossThick or LiSparse kernel, a kernel BRDF, an NBAR factor | `radiomax.retrievals.ross_thick`, `li_sparse_reciprocal`, `brdf_reflectance`, `nadir_adjustment` |
+| A RossThick or LiSparse kernel, a kernel BRDF, an NBAR factor | `radiomax.retrievals.ross_thick`, `li_sparse_reciprocal` (and both `_from_cosines`), `brdf_reflectance`, `nadir_adjustment` |
 | A split-window temperature or its design matrix | `radiomax.retrievals.split_window_sst`, `split_window_lst`, `split_window_features` |
 | An OCx band ratio, or its published coefficients | `radiomax.retrievals.band_ratio_chlorophyll`, `OCX_R2022` (a new table is a new `BandRatioTable` with its source, read there, and a test that pins every number) |
 | A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
