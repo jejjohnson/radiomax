@@ -80,7 +80,7 @@ array([2.529, 2.184, 2.196])
 >>> mu = np.cos(np.deg2rad([60.0, 85.0]))
 >>> plane, shell = 1.0 / mu, geometry.shell_air_mass(mu, 8_000.0, 9_000.0)
 >>> plane.round(2), shell.round(2)
-(array([ 2.  , 11.47]), array([1.99, 9.86]))
+(array([ 2.  , 11.47]), array([1.99, 9.88]))
 ```
 
 At 85° the plane-parallel air mass of a layer between 8 and 9 km is 16 % too long. A zenith at or past 90° gives NaN, and the other pixels keep a finite gradient.
