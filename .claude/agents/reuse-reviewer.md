@@ -20,7 +20,7 @@ The diff (`git diff <base>...HEAD`, default base `main`) or the files / commit r
 3. Also flag, wherever they appear in the diff:
    - a hand-written Earth radius, flattening, h, c or k_B → `geophysix.earth`, `geophysix.constants.STANDARD`;
    - a geodetic to Earth-centred conversion → `geophysix.earth.geodetic_to_ecef`;
-   - a solar angle, an Earth–Sun distance, a view angle, an air mass, a ray–ellipsoid intersection, a parallax or geostationary navigation → `radiomax.geometry`;
+   - a solar angle, an Earth–Sun distance, a view angle, an air mass, a ray–ellipsoid intersection, a parallax, geostationary navigation or whiskbroom scan geometry → `radiomax.geometry`;
    - a counts-to-radiance, reflectance or band-average formula or a response matrix → `radiomax.radiometry`;
    - Planck's law, a brightness temperature, or a radiance per cm⁻¹ as one per µm or per GHz → `radiomax.thermal`;
    - an array-namespace switch or an `xr.apply_ufunc` call → `radiomax._src.backend`, `radiomax._src.labelled`;

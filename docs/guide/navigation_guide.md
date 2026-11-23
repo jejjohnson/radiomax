@@ -66,3 +66,38 @@ The last angle misses the Earth, so it is NaN. `sweep` says which axis the instr
 >>> x.round(6), y.round(6)
 (array([      nan, -0.067782]), array([     nan, 0.089174]))
 ```
+
+## Whiskbroom scans
+
+A whiskbroom (MODIS, VIIRS) turns a mirror at a constant rate, so its columns are uniform in scan angle. [`scan_angles`](xref:api#radiomax.geometry.scan_angles) builds them, with the zones that VIIRS aggregates on board:
+
+```python
+>>> geometry.scan_angles(1354, 55.0)[[0, 676, 677, -1]].round(3)
+array([-5.4959e+01, -4.1000e-02,  4.1000e-02,  5.4959e+01])
+>>> viirs = ((1776, 3), (736, 2), (640, 1))  # (native samples, factor), from nadir
+>>> geometry.scan_angles(3200, 56.28, viirs).shape
+(3200,)
+```
+
+Towards the edge of the scan the pixel grows, faster across the track than along it. [`scan_pixel_growth`](xref:api#radiomax.geometry.scan_pixel_growth) returns both, and the growth along track in orbit angle, which is the one that matters for the overlap of successive scans:
+
+```python
+>>> angles = np.asarray([0.0, 30.0, 55.0])
+>>> along, orbit, across = geometry.scan_pixel_growth(angles, 705e3)
+>>> along.round(2), across.round(2)
+(array([1.  , 1.18, 2.01]), array([1.  , 1.42, 4.83]))
+```
+
+Because the pixels grow along track, scans overlap away from nadir (the bowtie). [`bowtie_detector_positions`](xref:api#radiomax.geometry.bowtie_detector_positions) says which detector, as a fraction, sees each row of the nadir grid, and which detector of the neighbouring scan sees it too. With 10 detectors, the first two rows at the three angles above:
+
+```python
+>>> own, neighbour, step = geometry.bowtie_detector_positions(orbit, 10)
+>>> own[:2].round(2)
+array([[0.  , 0.68, 2.29],
+       [1.  , 1.53, 2.78]])
+>>> neighbour[:2].round(2)
+array([[10.  ,  9.16,  7.2 ],
+       [11.  , 10.01,  7.69]])
+```
+
+A position is inside the neighbour's footprint from −0.5 to 9.5, so at nadir the neighbour does not see row 0, and at 30° and 55° it does.
