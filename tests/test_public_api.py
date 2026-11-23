@@ -20,6 +20,7 @@ SUBMODULES = [
     "_typing",
     "exceptions",
     "geometry",
+    "radiometry",
 ]
 
 

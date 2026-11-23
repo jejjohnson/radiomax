@@ -7,7 +7,7 @@ The public API is the set of public modules below, plus the exceptions that `rad
 | Module | Contents | Status |
 |---|---|---|
 | [`radiomax.geometry`](geometry.md) | Sun and view angles, the Earth–Sun distance, phase and scattering angles, air masses; parallax, navigation and scan geometry are planned | in progress |
-| `radiomax.radiometry` | Counts, radiance, reflectance, response matrices, band averages, spectral densities | planned |
+| [`radiomax.radiometry`](radiometry.md) | Counts, radiance, reflectance; band averages, response matrices and spectral densities are planned | in progress |
 | `radiomax.thermal` | Planck's law and brightness temperature | planned |
 | `radiomax.retrievals` | Empirical formulas with given coefficients | planned |
 | `radiomax.sar` | SAR calibration | planned |
