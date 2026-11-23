@@ -46,3 +46,28 @@ array([0.2099, 0.2099, 0.2099])
 ```
 
 Multiplying keeps the observation's detail, where the model at nadir would replace it. `reference_zenith=` also brings every date to one Sun; without it each pixel keeps its own. The weights per band go on the band dimension, and with noisy weights the model can fall to 0 or below, where the factor is NaN.
+
+## Split window
+
+Water vapour absorbs more at 12 µm than at 11 µm, so the difference of the two brightness temperatures says how much to add. Over the sea,
+
+$$
+T = a_0 + a_1 T_{11} + a_2 (T_{11} - T_{12}) + a_3 (\sec\theta_v - 1)
+$$
+
+```python
+>>> t11, t12 = np.asarray([288.0, 295.0]), np.asarray([287.2, 292.5])
+>>> coefficients = (0.5, 1.0, 2.0, 0.7)  # for illustration
+>>> retrievals.split_window_sst(t11, t12, 30.0, coefficients).round(3)
+array([290.208, 300.608])
+```
+
+Over land the emissivity enters, and [`split_window_lst`](xref:api#radiomax.retrievals.split_window_lst) is a weighted sum of features in one of two forms, `"quadratic"` (8 coefficients) and `"generalised"` (7). [`split_window_features`](xref:api#radiomax.retrievals.split_window_features) returns the features themselves, the design matrix of a fit. They are radtrax's, so coefficients fitted there apply here unchanged.
+
+```python
+>>> features = retrievals.split_window_features(t11, t12, 0.97, 0.005, 2.0, form="generalised")
+>>> features.shape
+(2, 7)
+```
+
+We ship no split-window coefficients, because they belong to a satellite, a region, a season and a version. They are a sequence, or an array with the coefficients on its last axis (so they may differ by pixel), or a DataArray with them on the dimension `feature`.
