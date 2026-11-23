@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.0.4](https://github.com/jejjohnson/radiomax/compare/v0.0.3...v0.0.4) (2026-11-23)
+
+
+### Features
+
+* **geometry:** geostationary scan angles to longitude and latitude, and back ([#52](https://github.com/jejjohnson/radiomax/issues/52)) ([468e15e](https://github.com/jejjohnson/radiomax/commit/468e15ef767ef9a07cabcdae21897c1aab9de74e))
+* **geometry:** the apparent position of an elevated target, and the ray–ellipsoid intersection ([#50](https://github.com/jejjohnson/radiomax/issues/50)) ([c60b7ce](https://github.com/jejjohnson/radiomax/commit/c60b7ce82d567606ac3a7c95b8372de1e58ca8a7))
+* **geometry:** whiskbroom scan angles, pixel growth and bowtie detector positions ([#53](https://github.com/jejjohnson/radiomax/issues/53)) ([1ed8a37](https://github.com/jejjohnson/radiomax/commit/1ed8a3737569c562e39aa15988d9a781ecd7afe2))
+* **retrievals:** kernel BRDF reflectance and the nadir adjustment ([#55](https://github.com/jejjohnson/radiomax/issues/55)) ([f2d7ecd](https://github.com/jejjohnson/radiomax/commit/f2d7ecd99544755074d237dd56d8d3a4313e59f4))
+* **retrievals:** ocean-colour chlorophyll from the maximum band ratio, with NASA's published coefficients ([#57](https://github.com/jejjohnson/radiomax/issues/57)) ([2498dca](https://github.com/jejjohnson/radiomax/commit/2498dcab81594a941e037ecfc83e59b5d42d8b19))
+* **retrievals:** split-window sea- and land-surface temperature from given coefficients ([#56](https://github.com/jejjohnson/radiomax/issues/56)) ([71c5744](https://github.com/jejjohnson/radiomax/commit/71c57440f90dea11a9b3d7fda8f8650d66cf38c2))
+* **retrievals:** the RossThick and LiSparse-Reciprocal kernels, moved from radtrax ([#54](https://github.com/jejjohnson/radiomax/issues/54)) ([bfcb1e2](https://github.com/jejjohnson/radiomax/commit/bfcb1e2a5712eedba93ec44aa67914626986d136))
+* **thermal:** band brightness temperatures from published coefficients (GOES, Landsat, Himawari) ([#49](https://github.com/jejjohnson/radiomax/issues/49)) ([a15b5a3](https://github.com/jejjohnson/radiomax/commit/a15b5a3b62ab4051081902fa3add4935bfff7345))
+* **thermal:** planck's law per wavenumber, moved from radtrax, and its views per µm and per GHz ([#46](https://github.com/jejjohnson/radiomax/issues/46)) ([fdeee0a](https://github.com/jejjohnson/radiomax/commit/fdeee0a1c888471fe665ead37e4ca9c8c5a7617a))
+* **thermal:** the monochromatic brightness temperature, moved from radtrax ([#47](https://github.com/jejjohnson/radiomax/issues/47)) ([d3ed4bd](https://github.com/jejjohnson/radiomax/commit/d3ed4bd88058cce47f74c885bb7b32e13b3fb4eb))
+
 ## [0.0.3](https://github.com/jejjohnson/radiomax/compare/v0.0.2...v0.0.3) (2026-11-23)
 
 
