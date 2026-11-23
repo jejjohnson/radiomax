@@ -1,4 +1,4 @@
-"""The harness's own tests: each check passes on a right function and fails on a wrong one."""
+"""Each check passes on a right function and fails on a wrong one."""
 
 from __future__ import annotations
 
@@ -234,7 +234,7 @@ class TestStoredRadtraxValues:
         )
         # the shell of the lowest 10 m at the zenith is plane-parallel
         assert_matches_oracle(stored["shell_air_mass"][0], np.ones(6), rtol=1e-12)
-        assert stored["shell_cosine"].shape + (6,) == stored["shell_air_mass"].shape
+        assert (*stored["shell_cosine"].shape, 6) == stored["shell_air_mass"].shape
 
     def test_planck_against_the_constants(self) -> None:
         stored = radtrax_values()
