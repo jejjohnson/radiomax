@@ -140,10 +140,16 @@ CALLS: dict[str, Callable[[Make], Any]] = {
     "li_sparse_reciprocal": lambda m: retrievals.li_sparse_reciprocal(
         m([20.0, 40.0]), 30.0, 50.0
     ),
+    "li_sparse_reciprocal_from_cosines": lambda m: (
+        retrievals.li_sparse_reciprocal_from_cosines(m([0.9, 0.7]), 0.8, 50.0)
+    ),
     "nadir_adjustment": lambda m: retrievals.nadir_adjustment(
         m([0.2, 0.3]), 0.1, 0.02, 30.0, 20.0, 50.0
     ),
     "ross_thick": lambda m: retrievals.ross_thick(m([20.0, 40.0]), 30.0, 50.0),
+    "ross_thick_from_cosines": lambda m: retrievals.ross_thick_from_cosines(
+        m([0.9, 0.7]), 0.8, 50.0
+    ),
     "split_window_features": lambda m: retrievals.split_window_features(
         m([300.0, 290.0]), 289.0, 0.97, 0.01, 2.0, form="generalised"
     ),

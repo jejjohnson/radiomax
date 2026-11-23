@@ -28,6 +28,8 @@ array([-0.2075, -1.2524, -1.5411])
 
 The relative azimuth is the one of [`relative_azimuth`](xref:api#radiomax.geometry.relative_azimuth): 0 is backscatter, where the hotspot is. Some products count it the other way round, from the forward direction, and the kernels cannot tell.
 
+A geometry that holds cosines uses [`ross_thick_from_cosines`](xref:api#radiomax.retrievals.ross_thick_from_cosines) and [`li_sparse_reciprocal_from_cosines`](xref:api#radiomax.retrievals.li_sparse_reciprocal_from_cosines). Their gradients in the cosines are right at exact nadir, where going through the angles would lose them.
+
 A zenith of 90° or more is NaN. The gradient is finite everywhere else, at nadir and at the hotspot too, where the kernels have a kink; their second derivatives are not finite at nadir.
 
 ## Adjusting to nadir

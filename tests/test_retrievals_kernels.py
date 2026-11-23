@@ -11,11 +11,17 @@ from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_trace
 from _oracles import radtrax_values
 from hypothesis import given, strategies as st
 
-from radiomax.retrievals import li_sparse_reciprocal, ross_thick
+from radiomax.retrievals import (
+    li_sparse_reciprocal,
+    li_sparse_reciprocal_from_cosines,
+    ross_thick,
+    ross_thick_from_cosines,
+)
 
 
 ZENITH = st.floats(0.0, 80.0)
 AZIMUTH = st.floats(-180.0, 360.0)
+ANGLE_FORM = {"ross": ross_thick, "li": li_sparse_reciprocal}
 KERNELS = pytest.mark.parametrize("kernel", [ross_thick, li_sparse_reciprocal])
 
 
@@ -169,3 +175,76 @@ class TestClosedForms:
         view = xr.DataArray(np.linspace(0.0, 60.0, 6).reshape(2, 3), dims=("y", "x"))
         for kernel in (ross_thick, li_sparse_reciprocal):
             assert kernel(30.0, view, 10.0).dims == ("y", "x")
+
+
+@pytest.mark.parametrize(
+    ("kernel", "name"),
+    [(ross_thick_from_cosines, "ross"), (li_sparse_reciprocal_from_cosines, "li")],
+)
+class TestFromCosines:
+    def test_radtraxs_values(self, kernel, name) -> None:
+        stored = radtrax_values()
+        got = kernel(
+            stored["kernel_cos_solar"],
+            stored["kernel_cos_view"],
+            stored["kernel_relative_azimuth"],
+            degrees=False,
+        )
+        assert_matches_oracle(got, stored[f"kernel_{name}"], rtol=0.0, atol=1e-13)
+
+    @needs_jax
+    def test_radtraxs_gradients(self, kernel, name) -> None:
+        # in the cosines themselves; π/8 for RossThick at exact nadir
+        import jax
+
+        stored = radtrax_values()
+        gradient = jax.vmap(
+            jax.grad(lambda *v: kernel(*v, degrees=False), argnums=(0, 1, 2))
+        )
+        got = gradient(
+            stored["kernel_cos_solar"],
+            stored["kernel_cos_view"],
+            stored["kernel_relative_azimuth"],
+        )
+        expected = stored[f"kernel_{name}_gradient"]
+        assert_matches_oracle(np.stack(got), expected, rtol=1e-13, atol=1e-13)
+        if name == "ross":
+            nadir = np.stack(got)[:2, 10]
+            assert_matches_oracle(nadir, np.full(2, math.pi / 8.0), rtol=1e-14)
+
+    @given(ZENITH, ZENITH, st.floats(0.0, 180.0))
+    def test_the_angle_form(self, kernel, name, solar, view, azimuth) -> None:
+        cosines = np.cos(np.deg2rad([solar, view]))
+        expected = ANGLE_FORM[name](solar, view, azimuth)
+        got = kernel(*cosines, azimuth)
+        # 1 − μ² keeps half of the digits near nadir and the hotspot
+        assert_matches_oracle(got, expected, rtol=1e-6, atol=1e-6)
+
+    def test_a_cosine_that_rounds_past_one(self, kernel, name) -> None:
+        assert abs(float(kernel(1.0 + 4e-16, 1.0, 0.0))) < 1e-14
+
+    def test_a_cosine_that_is_not_positive_is_nan(self, kernel, name) -> None:
+        cosine = np.asarray([0.5, 0.0, -0.1, np.nan])
+        for values in (kernel(cosine, 0.8, 20.0), kernel(0.8, cosine, 20.0)):
+            assert np.isnan(values).tolist() == [False, True, True, True]
+
+    @needs_jax
+    def test_gradients_are_finite_beside_an_invalid_pixel(self, kernel, name) -> None:
+        import jax
+
+        gradient = jax.grad(lambda *v: jax.numpy.nansum(kernel(*v)), argnums=(0, 1, 2))(
+            np.asarray([1.0, 0.8, 0.0, -0.1]),
+            np.asarray([1.0, 0.8, 0.5, 0.5]),
+            np.asarray([0.0, 0.0, 40.0, 40.0]),
+        )
+        assert np.isfinite(np.stack(gradient)).all()
+
+    def test_gradient_and_backends(self, kernel, name) -> None:
+        assert_grad_matches_fd(
+            lambda x: kernel(x[0], x[1], 100.0 * x[2]), np.asarray([0.8, 0.9, 0.7])
+        )
+        solar = np.linspace(0.3, 0.95, 6).reshape(2, 3)
+        view = solar[:, ::-1]
+        azimuth = np.linspace(10.0, 170.0, 6).reshape(2, 3)
+        assert_backends_agree(kernel, solar, view, azimuth, rtol32=1e-4)
+        assert_traces(kernel, *(v.ravel() for v in (solar, view, azimuth)))
