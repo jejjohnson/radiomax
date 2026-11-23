@@ -71,3 +71,24 @@ Over land the emissivity enters, and [`split_window_lst`](xref:api#radiomax.retr
 ```
 
 We ship no split-window coefficients, because they belong to a satellite, a region, a season and a version. They are a sequence, or an array with the coefficients on its last axis (so they may differ by pixel), or a DataArray with them on the dimension `feature`.
+
+## Ocean colour
+
+Phytoplankton absorb blue light, so chlorophyll follows from the ratio of blue to green reflectance. The OCx algorithms take the largest of several blue bands,
+
+$$
+\log_{10} \mathrm{chl} = \sum_i a_i r^i
+$$
+
+where $r = \log_{10}(\max R_{blue} / R_{green})$.
+
+```python
+>>> modis = retrievals.OCX_R2022["MODIS"]
+>>> modis.blue_nm, modis.green_nm
+((443.0, 488.0), 547.0)
+>>> blue = [np.asarray([0.0050, 0.0030]), np.asarray([0.0046, 0.0036])]
+>>> retrievals.band_ratio_chlorophyll(blue, 0.0030, modis.coefficients).round(3)
+array([0.558, 1.153])
+```
+
+[`OCX_R2022`](xref:api#radiomax.retrievals.OCX_R2022) holds the coefficients of NASA's 2022 reprocessing for twelve sensors, each record with the algorithm's name, its bands and where the numbers were read. NASA's standard product uses this formula above 0.35 mg m⁻³; below 0.25 mg m⁻³ it uses another (the colour index), with a blend between. Any other coefficients are passed the same way, as a sequence or an array.

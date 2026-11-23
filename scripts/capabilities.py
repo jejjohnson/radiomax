@@ -112,6 +112,9 @@ def _origin(obj: object) -> str:
 
 def _summary(obj: object, *, home: str) -> str:
     origin = _origin(obj).split(".")[0]
+    if origin == "builtins":
+        # a constant of a built-in type has no docstring of its own
+        return f"A `{type(obj).__name__}`; see the module's page."
     if origin != home:
         return f"Re-exported from `{origin}`."
     if isinstance(obj, typing.TypeAliasType):
