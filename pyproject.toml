@@ -22,7 +22,7 @@ classifiers = [
 dependencies = [
     "numpy>=2.0",
     # constants, the ellipsoid and Earth-centred coordinates
-    "geophysix>=0.0.4",
+    "geophysix>=0.0.5",
     # the namespace of an input array; pure Python, no dependencies of its own
     "array-api-compat>=1.11",
 ]
@@ -92,7 +92,7 @@ docs = [
 
 [tool.uv.sources]
 # geophysix is not on PyPI: it resolves from git, by tag.
-geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.4" }
+geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.5" }
 
 [build-system]
 requires = ["hatchling"]

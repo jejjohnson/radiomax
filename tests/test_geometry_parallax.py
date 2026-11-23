@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from _backends import SECOND_DEVICE, assert_backends_agree, needs_jax
+from _backends import assert_backends_agree, needs_jax
 from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from geophysix.earth import WGS84, ecef_to_geodetic, geodetic_to_ecef, sphere
 from hypothesis import given, strategies as st
@@ -194,7 +194,6 @@ class TestApparentPosition:
             lat,
             rtol=1e-11,
             rtol32=1e-4,
-            waits=SECOND_DEVICE,
         )
         assert_traces(
             lambda lon, lat: apparent_position(lon, lat, 1e4, *GEOSTATIONARY),

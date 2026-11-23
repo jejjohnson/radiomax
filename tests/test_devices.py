@@ -25,14 +25,6 @@ HOST_ONLY = {
     "utc_day_seconds",
 }
 
-#: Functions that call geophysix coordinates (geophysix#56).
-WAITS_FOR_GEOPHYSIX = {
-    "apparent_position",
-    "geostationary_lonlat",
-    "geostationary_scan_angles",
-    "view_angles",
-}
-
 Make = Callable[..., Any]
 GOES = {"lon_0": 0.0, "height": 35_786_023.0, "sweep": "x"}
 SATELLITE = (42_164_160.0, 0.0, 0.0)
@@ -178,7 +170,6 @@ def _outputs(result: Any) -> tuple[Any, ...]:
 
 def test_every_public_function_is_here() -> None:
     assert set(_functions(MODULES)) == set(CALLS) | HOST_ONLY
-    assert set(CALLS) >= WAITS_FOR_GEOPHYSIX
 
 
 @pytest.mark.parametrize("name", CALLS)
@@ -186,10 +177,6 @@ def test_the_result_is_on_the_inputs_device(name: str) -> None:
     def make(values: Any) -> Any:
         return strict.asarray(list(values), dtype=strict.float64, device=SECOND)
 
-    if name in WAITS_FOR_GEOPHYSIX:
-        with pytest.raises(ValueError, match="two different devices"):
-            CALLS[name](make)
-        return
     for output in _outputs(CALLS[name](make)):
         assert output.device == SECOND
 
@@ -210,8 +197,7 @@ def test_an_array_of_the_library_is_never_rebuilt(
     rebuilt: list[Any] = []
     monkeypatch.setattr(strict, "asarray", recording)
     CALLS[name](lambda values: asarray(list(values), dtype=strict.float64))
-    if name not in WAITS_FOR_GEOPHYSIX:
-        assert rebuilt == []
+    assert rebuilt == []
 
 
 @pytest.mark.skipif(not HAS_TORCH, reason="torch is not installed")
@@ -226,8 +212,6 @@ def test_torch_keeps_the_graph(name: str) -> None:
         leaves.append(leaf)
         return leaf
 
-    if name in WAITS_FOR_GEOPHYSIX:
-        pytest.skip("geophysix rebuilds its inputs until geophysix#56 is released")
     outputs = [o for o in _outputs(CALLS[name](make)) if o.is_floating_point()]
     (leaf,) = leaves
     assert leaf.requires_grad

@@ -21,7 +21,6 @@ __all__ = [
     "HAS_TORCH",
     "HAS_XARRAY",
     "KINDS",
-    "SECOND_DEVICE",
     "ArrayKind",
     "assert_backends_agree",
     "needs_jax",
@@ -32,10 +31,6 @@ HAS_JAX = importlib.util.find_spec("jax") is not None
 HAS_XARRAY = importlib.util.find_spec("xarray") is not None
 HAS_TORCH = importlib.util.find_spec("torch") is not None
 HAS_STRICT = importlib.util.find_spec("array_api_strict") is not None
-
-#: For ``waits``: functions that call geophysix coordinates, until a release of
-#: geophysix puts its constants on the input's device (geophysix#56).
-SECOND_DEVICE = ("second device",)
 
 needs_jax = pytest.mark.skipif(not HAS_JAX, reason="JAX is not installed")
 needs_xarray = pytest.mark.skipif(not HAS_XARRAY, reason="xarray is not installed")
@@ -113,7 +108,6 @@ def assert_backends_agree(
     *args: Any,
     rtol: float = 1e-12,
     rtol32: float = 1e-5,
-    waits: tuple[str, ...] = (),
 ) -> None:
     """Check that every array kind gives NumPy's numbers, kind and dtype.
 
@@ -126,9 +120,6 @@ def assert_backends_agree(
         *args: Float64 NumPy arrays to call it with.
         rtol: Relative tolerance in float64.
         rtol32: Relative tolerance of float32 against float64.
-        waits: Names of kinds on which the function raises for now, because a
-            dependency does. One that stops raising fails the check, so it is
-            taken off the list.
 
     Raises:
         AssertionError: If a check fails; the message names the kind.
@@ -136,10 +127,6 @@ def assert_backends_agree(
     arrays = [np.asarray(arg, dtype=np.float64) for arg in args]
     expected = _outputs(fn(*arrays))
     for kind in KINDS:
-        if kind.name in waits:
-            with pytest.raises(Exception):  # noqa: B017
-                fn(*(kind.make(array) for array in arrays))
-            continue
         variants = {kind.name: fn}
         if kind.name == "jax":
             import jax

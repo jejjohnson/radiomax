@@ -14,7 +14,7 @@ radiomax is not on PyPI yet, and neither is [geophysix](https://github.com/jejjo
 :::{tab-item} uv
 
 ```bash
-uv pip install "geophysix @ git+https://github.com/jejjohnson/geophysix@v0.0.4" "radiomax @ git+https://github.com/jejjohnson/radiomax"
+uv pip install "geophysix @ git+https://github.com/jejjohnson/geophysix@v0.0.5" "radiomax @ git+https://github.com/jejjohnson/radiomax"
 ```
 :::
 :::{tab-item} From source
