@@ -8,6 +8,9 @@ import sys
 from collections.abc import Callable, Mapping
 from typing import Any
 
+import numpy as np
+
+from radiomax._src.backend import array_namespace
 from radiomax.exceptions import ValidationError
 
 
@@ -40,7 +43,8 @@ def elementwise[**P, R](
         1. With no DataArray among the arguments, call the function as it is.
         2. Otherwise hand every DataArray to ``xarray.apply_ufunc``, which
            aligns them by dimension name and calls the function on their data.
-           The other arguments are passed through.
+           The other arguments are passed through, and an output that does
+           not depend on every input is broadcast.
         3. Return DataArrays with the inputs' coordinates, and without a name
            or attributes, because the quantity and its unit have changed.
 
@@ -164,7 +168,15 @@ def _apply(
 
     def on_data(*data: Any) -> Any:
         bound.arguments.update(zip(labelled, data, strict=True))
-        return function(*bound.args, **bound.kwargs)
+        result = function(*bound.args, **bound.kwargs)
+        # xarray needs every output in the inputs' common shape, and one that
+        # does not depend on an input lacks that input's dimensions
+        shape = np.broadcast_shapes(*(array.shape for array in data))
+        outputs = result if n_outputs > 1 else (result,)
+        outputs = tuple(
+            array_namespace(output).broadcast_to(output, shape) for output in outputs
+        )
+        return outputs if n_outputs > 1 else outputs[0]
 
     result = xarray.apply_ufunc(
         on_data,
