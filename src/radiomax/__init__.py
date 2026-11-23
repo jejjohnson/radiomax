@@ -5,7 +5,7 @@ spectral responses, Planck's law, and empirical formulas with given
 coefficients, pixel by pixel. Nothing in it models radiation moving through an
 atmosphere.
 
-## Planned modules
+## Modules
 
 | Module | What it gives you |
 |---|---|
@@ -16,7 +16,7 @@ atmosphere.
 | `radiomax.sar` | SAR calibration |
 | `radiomax.altimetry` | altimeter range corrections |
 
-Each module appears with its first feature.
+Each module appears with its first feature: `radiomax.geometry` is the first.
 """
 
 from __future__ import annotations
