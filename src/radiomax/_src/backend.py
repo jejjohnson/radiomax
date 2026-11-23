@@ -124,10 +124,8 @@ def floating_inputs(
         elif not xp.isdtype(array.dtype, ("bool", "integral")):
             msg = f"inputs must be real numbers, got dtype {array.dtype}"
             raise ValidationError(msg)
-    if floating:
-        dtype = xp.result_type(*floating)
-    else:
-        dtype = xp.asarray(0.0).dtype
+    default = xp.asarray(0.0).dtype
+    dtype = xp.result_type(*floating) if floating else default
     return xp, [xp.asarray(array, dtype=dtype) for array in arrays]
 
 
