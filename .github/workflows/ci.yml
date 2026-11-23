@@ -47,10 +47,11 @@ jobs:
           python-version: "3.12"
       # The base install: an environment of its own, so no test group brings
       # JAX or xarray in through a reference library.
+      # cyclopts and loguru are for the docs-script tests.
       - name: Install the package and pytest, no extras
         run: |
           uv venv /tmp/base
-          uv pip install --python /tmp/base . pytest hypothesis array-api-strict
+          uv pip install --python /tmp/base . pytest hypothesis array-api-strict cyclopts loguru
       - name: Assert that JAX and xarray are not installed
         run: >-
           /tmp/base/bin/python -c

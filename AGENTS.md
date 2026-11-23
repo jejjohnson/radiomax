@@ -73,7 +73,7 @@ Everything composes because it keeps these contracts; the tests in "What enforce
 
 ### 1. Public functions
 
-These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/15), in the order they were made.
+These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/15), where the measurements behind them are.
 
 - **Arrays.** One implementation in functions of the Python array API standard. The namespace comes from the input: NumPy in gives NumPy out, JAX in gives JAX out, and the same for CuPy and any array-API library. JAX and xarray are never imported at module level.
 - **xarray.** A DataArray in gives a DataArray out, through `xr.apply_ufunc`, with dimensions aligned by name.
