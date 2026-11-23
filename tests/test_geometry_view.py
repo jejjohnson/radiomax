@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from _backends import SECOND_DEVICE, assert_backends_agree, needs_jax
+from _backends import assert_backends_agree, needs_jax
 from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from _oracles import functax_enu, proj_view_angles
 from geophysix.earth import SPHERE, geodetic_to_ecef
@@ -136,7 +136,6 @@ class TestViewAngles:
             lat,
             *satellite,
             rtol32=1e-2,
-            waits=SECOND_DEVICE,
         )
         assert_traces(view_angles, lon, lat, *satellite, rtol=1e-11)
 

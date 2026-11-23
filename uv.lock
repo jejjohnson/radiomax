@@ -795,9 +795,10 @@ wheels = [
 
 [[package]]
 name = "geophysix"
-version = "0.0.4"
-source = { git = "https://github.com/jejjohnson/geophysix?tag=v0.0.4#aed2dab2815a32fb24be446ba4a570aab746935a" }
+version = "0.0.5"
+source = { git = "https://github.com/jejjohnson/geophysix?tag=v0.0.5#63793f4aa63eec96c4a0a6f8bf02f3797262dff0" }
 dependencies = [
+    { name = "array-api-compat" },
     { name = "numpy" },
 ]
 
@@ -2492,7 +2493,7 @@ wheels = [
 
 [[package]]
 name = "radiomax"
-version = "0.0.2"
+version = "0.0.6"
 source = { editable = "." }
 dependencies = [
     { name = "array-api-compat" },
@@ -2551,7 +2552,7 @@ typecheck = [
 [package.metadata]
 requires-dist = [
     { name = "array-api-compat", specifier = ">=1.11" },
-    { name = "geophysix", git = "https://github.com/jejjohnson/geophysix?tag=v0.0.4" },
+    { name = "geophysix", git = "https://github.com/jejjohnson/geophysix?tag=v0.0.5" },
     { name = "jax", marker = "extra == 'jax'", specifier = ">=0.4.30" },
     { name = "numpy", specifier = ">=2.0" },
     { name = "xarray", marker = "extra == 'xarray'", specifier = ">=2024.6" },
