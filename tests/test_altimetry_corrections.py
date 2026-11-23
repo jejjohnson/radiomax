@@ -163,7 +163,9 @@ class TestWet:
     def test_a_traced_constant_keeps_jax(self) -> None:
         import jax
 
-        slope = jax.grad(lambda k: wet_troposphere_correction(25.0, 270.0, k3=k))(3776.0)
+        slope = jax.grad(lambda k: wet_troposphere_correction(25.0, 270.0, k3=k))(
+            3776.0
+        )
         step = wet_troposphere_correction(25.0, 270.0, k2=0.0, k3=1.0)
         assert_matches_oracle(slope, step, rtol=1e-14)
 
@@ -290,7 +292,9 @@ class TestBarometer:
         assert 1000.0 * float(static - varying) == pytest.approx(23.9, abs=0.05)
 
     def test_one_hectopascal_is_about_a_centimetre(self) -> None:
-        assert float(inverse_barometer(101100.0, 101000.0)) == pytest.approx(-0.01, 0.01)
+        assert float(inverse_barometer(101100.0, 101000.0)) == pytest.approx(
+            -0.01, 0.01
+        )
 
     @given(PRESSURE, PRESSURE)
     def test_the_formula_in_its_own_units(self, pressure, mean) -> None:

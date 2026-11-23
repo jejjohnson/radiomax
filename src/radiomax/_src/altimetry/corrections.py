@@ -54,7 +54,9 @@ def sea_surface_height(altitude: Any, altimeter_range: Any, *corrections: Any) -
 
     Examples:
         >>> from radiomax.altimetry import sea_surface_height
-        >>> round(float(sea_surface_height(1_336_000.0, 1_335_962.0, -2.3, -0.2)), 6)
+        >>> round(
+        ...     float(sea_surface_height(1_336_000.0, 1_335_962.0, -2.3, -0.2)), 6
+        ... )
         40.5
     """
     _, (altitude, corrected, *values) = floating_inputs(
@@ -215,7 +217,9 @@ def dual_frequency_ionosphere_correction(
         >>> ku, c = 13.575e9, 5.3e9
         >>> delay = 0.1 * (ku / c) ** 2
         >>> round(
-        ...     float(dual_frequency_ionosphere_correction(10.1, 10.0 + delay, ku, c)),
+        ...     float(
+        ...         dual_frequency_ionosphere_correction(10.1, 10.0 + delay, ku, c)
+        ...     ),
         ...     9,
         ... )
         -0.1
