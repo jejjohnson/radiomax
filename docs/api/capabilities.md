@@ -160,7 +160,7 @@ current).
 
 | Name | Kind | What it does |
 |---|---|---|
-| `OCX_R2022` | constant | Re-exported from `builtins`. |
+| `OCX_R2022` | constant | A `mappingproxy`; see the module's page. |
 
 ## `radiomax.thermal`
 
