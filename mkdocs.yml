@@ -74,6 +74,7 @@ nav:
   - Capability index: capabilities.md
   - Geometry: geometry.md
   - Radiometry: radiometry.md
+  - Thermal: thermal.md
   - Type aliases: typing.md
   - Exceptions: exceptions.md
 

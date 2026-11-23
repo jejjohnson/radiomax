@@ -19,7 +19,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 | `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclasses `BackendError`, `ValidationError` | now |
 | `geometry` | Sun and view angles, relative azimuth, phase and scattering angles, air masses, the Earth–Sun distance, the two time arrays; planned: parallax, navigation, scan geometry | now |
 | `radiometry` | Counts, radiance, reflectance, band averages, response matrices, spectral densities | now |
-| `thermal` | Planck's law and monochromatic brightness temperature, and the band inverses sensors publish | planned |
+| `thermal` | Planck's law per wavenumber, its logarithm and its views per µm and per GHz; planned: monochromatic brightness temperature, and the band inverses sensors publish | now |
 | `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, split-window temperatures, ocean colour | planned |
 | `sar` | SAR calibration | planned |
 | `altimetry` | Altimeter range corrections | planned |
@@ -70,7 +70,8 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A trapezoid sum over a spectral response, a band irradiance, `E * wl**2 / 1e7` | `radiomax.radiometry.band_average`, `band_irradiance`, `trapezoid_weights`, `per_nm_to_per_cm`, `per_cm_to_per_nm` |
 | A response on another grid than its table, an interpolated response times a spectrum | `radiomax.radiometry.response_matrix` (exact, host), `apply_response`, `apply_response_adjoint`, `response_coverage` |
 | A Gaussian, box or triangular response, rows normalised to 1, a band centre or width | `radiomax.radiometry.gaussian_response`, `box_response`, `triangle_response`, `sampled_response_matrix`, `band_centre`, `equivalent_width` |
-| Planck's law or a brightness temperature | `radiomax.thermal` (planned) |
+| Planck's law, a radiance per cm⁻¹ as one per µm or per GHz | `radiomax.thermal.planck_radiance`, `log_planck_radiance`, `to_per_um`, `from_per_um`, `to_per_ghz`, `from_per_ghz` |
+| A brightness temperature | `radiomax.thermal` (planned) |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |
 | A constant as an array of the input's dtype | `radiomax._src.backend.like` |
 | `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` from `radiomax._src.labelled`, `apply_along` for a function that consumes a named dimension, `is_dataarray` |
