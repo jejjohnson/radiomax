@@ -69,3 +69,18 @@ Every azimuth points from the pixel, towards the Sun or the sensor, clockwise fr
 >>> geometry.scattering_angle(zenith, view_zenith, relative).round(1)
 array([149.8, 150.5, 132.5])
 ```
+
+## Air masses
+
+[`air_mass_factor`](xref:api#radiomax.geometry.air_mass_factor) is the plane-parallel two-way path from the Sun to the surface to the sensor, relative to the vertical. It overestimates past about 75°. [`shell_air_mass`](xref:api#radiomax.geometry.shell_air_mass) follows the Earth's curvature for one layer, one way, from the cosine of a zenith angle at the surface.
+
+```python
+>>> geometry.air_mass_factor(zenith, view_zenith).round(3)
+array([2.529, 2.184, 2.196])
+>>> mu = np.cos(np.deg2rad([60.0, 85.0]))
+>>> plane, shell = 1.0 / mu, geometry.shell_air_mass(mu, 8_000.0, 9_000.0)
+>>> plane.round(2), shell.round(2)
+(array([ 2.  , 11.47]), array([1.99, 9.86]))
+```
+
+At 85° the plane-parallel air mass of a layer between 8 and 9 km is 16 % too long. A zenith at or past 90° gives NaN, and the other pixels keep a finite gradient.
