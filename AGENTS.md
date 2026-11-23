@@ -11,7 +11,7 @@ radiomax is the GeoStack's library of observation geometry and radiometry: it co
 
 People build on a package like this, so **the package is a library of primitives**: new code composes what is here, and anything genuinely new lands where the next person will find and reuse it.
 
-The public API is the set of public modules below; private code lives in `src/radiomax/_src/<module>/`. `src/radiomax/__init__.py` exports only `__version__` and the exceptions. The modules marked planned are each created by their first feature issue ([jejjohnson/geostack#300](https://github.com/jejjohnson/geostack/issues/300) is the backlog).
+The public API is the set of public modules below; private code lives in `src/radiomax/_src/<module>/`. `src/radiomax/__init__.py` exports only `__version__` and the exceptions. [jejjohnson/geostack#300](https://github.com/jejjohnson/geostack/issues/300) is the backlog.
 
 | Module | Owns | Status |
 |---|---|---|
@@ -22,7 +22,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 | `thermal` | Planck's law per wavenumber, its logarithm and its views per µm and per GHz, monochromatic brightness temperature, the band inverses sensors publish | now |
 | `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, the kernel BRDF, split-window temperatures, ocean colour | now |
 | `sar` | SAR calibration: backscatter from digital numbers, and σ⁰, β⁰ and γ⁰ from each other | now |
-| `altimetry` | Altimeter range corrections | planned |
+| `altimetry` | Altimeter range corrections with a closed form: dry and wet troposphere, ionosphere, inverse barometer, and the sea surface height | now |
 
 ### Boundaries
 
@@ -80,6 +80,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A split-window temperature or its design matrix | `radiomax.retrievals.split_window_sst`, `split_window_lst`, `split_window_features` |
 | An OCx band ratio, or its published coefficients | `radiomax.retrievals.band_ratio_chlorophyll`, `OCX_R2022` (a new table is a new `BandRatioTable` with its source, read there, and a test that pins every number) |
 | `(dn / lut) ** 2`, `beta0 * sin(incidence)`, `sigma0 / cos(incidence)` | `radiomax.sar.dn_to_backscatter`, `beta0_to_sigma0`, `sigma0_to_gamma0` and their inverses |
+| An altimeter's dry, wet or ionospheric correction, an inverse barometer, `altitude - (range + corrections)` | `radiomax.altimetry.dry_troposphere_correction`, `wet_troposphere_correction`, `ionosphere_correction`, `dual_frequency_ionosphere_correction`, `inverse_barometer`, `sea_surface_height` |
 | A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
 | A frozen record that must be a JAX pytree | `@register_record` from `radiomax._src.records` |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |

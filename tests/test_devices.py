@@ -11,10 +11,10 @@ import array_api_strict as strict
 import pytest
 from _backends import HAS_TORCH
 
-from radiomax import geometry, radiometry, retrievals, sar, thermal
+from radiomax import altimetry, geometry, radiometry, retrievals, sar, thermal
 
 
-MODULES = (geometry, radiometry, thermal, retrievals, sar)
+MODULES = (geometry, radiometry, thermal, retrievals, sar, altimetry)
 SECOND = strict.Device("device1")
 
 #: Functions that return NumPy whatever they are given, or take no array.
@@ -153,6 +153,26 @@ CALLS: dict[str, Callable[[Make], Any]] = {
     ),
     "split_window_sst": lambda m: retrievals.split_window_sst(
         m([300.0, 290.0]), 289.0, 40.0, [1.0, 1.0, 2.0, 0.5]
+    ),
+    "dry_troposphere_correction": lambda m: altimetry.dry_troposphere_correction(
+        m([98e3, 101e3]), 45.0
+    ),
+    "dual_frequency_ionosphere_correction": lambda m: (
+        altimetry.dual_frequency_ionosphere_correction(
+            m([0.1, 0.2]), 0.9, 13.575e9, 5.3e9
+        )
+    ),
+    "inverse_barometer": lambda m: altimetry.inverse_barometer(
+        m([98e3, 101e3]), 101.1e3
+    ),
+    "ionosphere_correction": lambda m: altimetry.ionosphere_correction(
+        m([1e17, 5e17]), 13.575e9
+    ),
+    "sea_surface_height": lambda m: altimetry.sea_surface_height(
+        m([1000.0, 1010.0]), 960.0, -2.3, 0.1
+    ),
+    "wet_troposphere_correction": lambda m: altimetry.wet_troposphere_correction(
+        m([10.0, 25.0]), 275.0
     ),
     "beta0_to_sigma0": lambda m: sar.beta0_to_sigma0(m([0.1, 0.2]), 40.0),
     "dn_to_backscatter": lambda m: sar.dn_to_backscatter(m([100.0, 200.0]), 300.0),

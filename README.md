@@ -29,7 +29,7 @@ uv pip install "geophysix @ git+https://github.com/jejjohnson/geophysix@v0.0.5" 
 
 ## Status
 
-The public modules `geometry`, `radiometry`, `thermal`, `retrievals` and `sar` are built. `altimetry` is planned.
+The public modules `geometry`, `radiometry`, `thermal`, `retrievals`, `sar` and `altimetry` are built.
 
 ## Design
 

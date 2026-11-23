@@ -40,6 +40,7 @@ project:
         - file: guide/thermal_guide.md
         - file: guide/retrievals_guide.md
         - file: guide/sar_guide.md
+        - file: guide/altimetry_guide.md
     - title: Project
       children:
         - file: contributing.md

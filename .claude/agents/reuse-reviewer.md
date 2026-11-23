@@ -25,6 +25,7 @@ The diff (`git diff <base>...HEAD`, default base `main`) or the files / commit r
    - Planck's law, a brightness temperature, or a radiance per cm⁻¹ as one per µm or per GHz → `radiomax.thermal`;
    - a BRDF kernel, a split-window or an ocean-colour formula → `radiomax.retrievals`;
    - a SAR calibration or a conversion between σ⁰, β⁰ and γ⁰ → `radiomax.sar`;
+   - an altimeter range correction or a sea surface height → `radiomax.altimetry`;
    - an array-namespace switch or an `xr.apply_ufunc` call → `radiomax._src.backend`, `radiomax._src.labelled`;
    - a new exception class for a bad argument or an unknown array library → `ValidationError`, `BackendError`;
    - a public name that duplicates another public name for a different object (`tests/test_capabilities.py` will fail on it).
