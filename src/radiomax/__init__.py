@@ -21,12 +21,13 @@ Each module appears with its first feature.
 
 from __future__ import annotations
 
-from radiomax.exceptions import RadiomaxError, ValidationError
+from radiomax.exceptions import BackendError, RadiomaxError, ValidationError
 
 
 __version__ = "0.0.1"
 
 __all__ = [
+    "BackendError",
     "RadiomaxError",
     "ValidationError",
     "__version__",

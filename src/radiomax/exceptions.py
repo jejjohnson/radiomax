@@ -13,6 +13,7 @@ from __future__ import annotations
 
 
 __all__ = [
+    "BackendError",
     "RadiomaxError",
     "ValidationError",
 ]
@@ -28,6 +29,10 @@ class RadiomaxError(ValueError):
         >>> issubclass(RadiomaxError, ValueError)
         True
     """
+
+
+class BackendError(RadiomaxError):
+    """Raised for an array of an unknown library, or of several in one call."""
 
 
 class ValidationError(RadiomaxError):

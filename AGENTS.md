@@ -16,7 +16,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 | Module | Owns | Status |
 |---|---|---|
 | `_typing.py` | The `ArrayLike` type alias | now |
-| `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclass `ValidationError` | now |
+| `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclasses `BackendError`, `ValidationError` | now |
 | `geometry` | Sun and view angles, the Earth–Sun distance, air masses, parallax, navigation, scan geometry | planned |
 | `radiometry` | Counts, radiance, reflectance, response matrices, band averages, spectral densities | planned |
 | `thermal` | Planck's law and monochromatic brightness temperature, and the band inverses sensors publish | planned |
@@ -65,7 +65,10 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A solar zenith angle, an Earth–Sun distance, a view angle, an air mass | `radiomax.geometry` (planned) |
 | `gain * dn + offset`, `pi * L * d**2 / (E0 * cos(sza))`, a trapezoid sum over a spectral response | `radiomax.radiometry` (planned) |
 | Planck's law or a brightness temperature | `radiomax.thermal` (planned) |
-| A new exception for a bad argument | `ValidationError` |
+| `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |
+| A constant as an array of the input's dtype | `radiomax._src.backend.like` |
+| `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` from `radiomax._src.labelled`, `is_dataarray` |
+| A new exception for a bad argument, or for an unknown array library | `ValidationError`, `BackendError` |
 
 ## The contracts
 
@@ -75,8 +78,8 @@ Everything composes because it keeps these contracts; the tests in "What enforce
 
 These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/15), where the measurements behind them are.
 
-- **Arrays.** One implementation in functions of the Python array API standard. The namespace comes from the input: NumPy in gives NumPy out, JAX in gives JAX out, and the same for CuPy and any array-API library. JAX and xarray are never imported at module level.
-- **xarray.** A DataArray in gives a DataArray out, through `xr.apply_ufunc`, with dimensions aligned by name.
+- **Arrays.** One implementation in functions of the Python array API standard. The namespace comes from the input: NumPy in gives NumPy out, JAX in gives JAX out, and the same for CuPy and any array-API library. JAX and xarray are never imported at module level. `xp, (x, y) = floating_inputs(x, y)` opens every function; a NumPy array joins the other library, and two other libraries in one call raise `BackendError`.
+- **xarray.** A DataArray in gives a DataArray out, through `xr.apply_ufunc`, with dimensions aligned by name; `@elementwise` does it. An unlabelled array with dimensions next to a DataArray raises `ValidationError`, and the result has no name and no attributes.
 - **dtype.** float32 stays float32; integer arrays become the namespace's default float; constants enter in the input's dtype.
 - **Units.** SI, with two named exceptions: angles are degrees by default (`degrees=False` for radians), never guessed from the magnitude, and spectral code uses wavenumber in cm⁻¹, in arguments named `wavenumber_cm`.
 - **Arguments.** Longitude before latitude; an `Ellipsoid` or `Constants` record as a keyword with a default; nothing reads a global.
@@ -90,7 +93,7 @@ These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/1
 
 ### 2. Exceptions
 
-- Every error derives from `RadiomaxError`, which is a `ValueError`: `ValidationError` is a bad argument (its shape, a dimension name, its value). A new error goes into `exceptions.py`, is exported, and joins the list in `tests/test_exceptions.py`.
+- Every error derives from `RadiomaxError`, which is a `ValueError`: `ValidationError` is a bad argument (its shape, a dimension name, its value), `BackendError` an array of an unknown library or of several in one call. A new error goes into `exceptions.py`, is exported, and joins the list in `tests/test_exceptions.py`.
 
 ### The public API
 

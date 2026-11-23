@@ -46,6 +46,7 @@ dev = [
 test = [
     # Reference results only: oracles and property tests, never runtime imports.
     "array-api-strict>=2.3",
+    "dask[array]>=2024.6",
     "georeader-spaceml>=2.4.1",
     "hypothesis>=6.100",
     "pvlib>=0.11",

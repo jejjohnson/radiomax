@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from radiomax import RadiomaxError, ValidationError
+from radiomax import BackendError, RadiomaxError, ValidationError
 
 
-SUBCLASSES = [ValidationError]
+SUBCLASSES = [BackendError, ValidationError]
 
 
 @pytest.mark.parametrize("error", SUBCLASSES)

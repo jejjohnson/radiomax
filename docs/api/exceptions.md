@@ -5,6 +5,7 @@ Every error raised by the package derives from [`RadiomaxError`][radiomax.Radiom
 ```mermaid
 graph TD
     V[ValueError] --> R[RadiomaxError]
+    R --> B[BackendError]
     R --> A[ValidationError]
 ```
 
