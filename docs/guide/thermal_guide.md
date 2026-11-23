@@ -4,7 +4,7 @@ title: Thermal
 
 # Thermal
 
-[`radiomax.thermal`](xref:api#radiomax.thermal) holds Planck's law. Its spectral axis is the wavenumber $\tilde\nu$ in cm⁻¹, in arguments named `wavenumber_cm`, and its radiance is per cm⁻¹.
+[`radiomax.thermal`](xref:api#radiomax.thermal) holds Planck's law and the brightness temperatures that invert it. Its spectral axis is the wavenumber $\tilde\nu$ in cm⁻¹, in arguments named `wavenumber_cm`, and its radiance is per cm⁻¹.
 
 ## Planck's law
 
@@ -45,3 +45,27 @@ The radiance of a cold scene at a short wavelength falls below the smallest floa
 ```
 
 A temperature or a wavenumber that is not positive has no radiance, so those pixels are NaN, and the other pixels keep a finite gradient.
+
+## Brightness temperature
+
+The brightness temperature is the temperature of the black body that emits the radiance we measured,
+
+$$
+T_b = \frac{c_2 \tilde\nu}{\ln(1 + c_1 \tilde\nu^3 / L)}
+$$
+
+```python
+>>> thermal.brightness_temperature(wavenumber, radiance).round(6)
+array([290., 290., 290.])
+```
+
+The radiance must be per cm⁻¹. If it is per µm, [`from_per_um`](xref:api#radiomax.thermal.from_per_um) comes first:
+
+```python
+>>> per_um = np.asarray([0.4, 8.0, 7.5])
+>>> per_cm = thermal.from_per_um(per_um, wavenumber)
+>>> thermal.brightness_temperature(wavenumber, per_cm).round(2)
+array([290.33, 287.85, 287.41])
+```
+
+Noise can make the radiance of a cold, dark pixel negative. Such a pixel has no brightness temperature and is NaN, and the gradient of its neighbours stays finite.

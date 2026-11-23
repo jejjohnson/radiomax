@@ -1,7 +1,8 @@
-"""Planck's law per wavenumber, and its views per µm and per GHz."""
+"""Planck's law per wavenumber, and the brightness temperatures that invert it."""
 
 from __future__ import annotations
 
+from radiomax._src.thermal.brightness import brightness_temperature
 from radiomax._src.thermal.planck import (
     from_per_ghz,
     from_per_um,
@@ -13,6 +14,7 @@ from radiomax._src.thermal.planck import (
 
 
 __all__ = [
+    "brightness_temperature",
     "from_per_ghz",
     "from_per_um",
     "log_planck_radiance",
