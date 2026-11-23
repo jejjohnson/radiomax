@@ -12,11 +12,18 @@ current).
 
 ## `radiomax`
 
+### Exception hierarchy for `radiomax`. (`radiomax.exceptions`)
+
 | Name | Kind | What it does |
 |---|---|---|
-| `BackendError` | class | Raised for an array of an unknown library, or of several in one call. |
 | `RadiomaxError` | class | Base class for every exception raised by ``radiomax``. |
 | `ValidationError` | class | Raised for a bad argument: its shape, a dimension name or its value. |
+
+### Re-exported from other libraries
+
+| Name | Kind | What it does |
+|---|---|---|
+| `BackendError` | class | Re-exported from `pipekit_ops`. |
 
 ## `radiomax.altimetry`
 

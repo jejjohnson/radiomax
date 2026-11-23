@@ -8,9 +8,9 @@ from types import ModuleType
 from typing import Any
 
 import numpy as np
+from pipekit_array.functions import elementwise, floating_inputs, is_dataarray, like
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import apply_along, elementwise, is_dataarray
+from radiomax._src.labelled import apply_along
 from radiomax._src.radiometry.band import band_average, trapezoid_weights
 from radiomax.exceptions import ValidationError
 

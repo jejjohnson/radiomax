@@ -16,7 +16,6 @@ from radiomax.altimetry import (
     sea_surface_height,
     wet_troposphere_correction,
 )
-from radiomax.exceptions import ValidationError
 
 
 KU, C = 13.575e9, 5.3e9
@@ -79,9 +78,9 @@ class TestHeight:
 
         along = xr.DataArray([960.0, 961.0], dims="time")
         unnamed = np.asarray([-2.2, -2.3])
-        with pytest.raises(ValidationError, match="'corrections' has dimensions"):
+        with pytest.raises(ValueError, match="'corrections' has dimensions"):
             sea_surface_height(1000.0, along, -0.1, unnamed)
-        with pytest.raises(ValidationError, match="the DataArray 'corrections'"):
+        with pytest.raises(ValueError, match="the DataArray 'corrections'"):
             sea_surface_height(unnamed, 960.0, along)
 
 

@@ -31,9 +31,7 @@ from _oracles import (
 from geophysix.constants import STANDARD
 from geophysix.earth import geodetic_to_ecef
 from hypothesis import given, strategies as st
-
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
+from pipekit_array.functions import elementwise, floating_inputs, like
 
 
 SLOPE = 0.3

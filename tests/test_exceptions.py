@@ -6,12 +6,13 @@ so a change in the inheritance graph is a breaking change.
 
 from __future__ import annotations
 
+import pipekit_ops
 import pytest
 
 from radiomax import BackendError, RadiomaxError, ValidationError
 
 
-SUBCLASSES = [BackendError, ValidationError]
+SUBCLASSES = [ValidationError]
 
 
 @pytest.mark.parametrize("error", SUBCLASSES)
@@ -37,6 +38,13 @@ def test_a_single_except_clause_catches_the_package() -> None:
         except RadiomaxError as err:
             caught.append(err)
     assert [type(err) for err in caught] == SUBCLASSES
+
+
+def test_the_backend_error_is_pipekits() -> None:
+    assert BackendError is pipekit_ops.BackendError
+    assert issubclass(BackendError, ValueError)
+    assert issubclass(BackendError, TypeError)
+    assert not issubclass(BackendError, RadiomaxError)
 
 
 def test_subclasses_have_a_docstring() -> None:

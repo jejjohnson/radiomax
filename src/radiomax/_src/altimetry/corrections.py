@@ -5,9 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from geophysix.constants import H2O, STANDARD, Constants, Gas
+from pipekit_array.functions import elementwise, floating_inputs, like
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
 from radiomax._src.numerics import to_radians
 
 

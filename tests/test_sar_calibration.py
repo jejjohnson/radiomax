@@ -8,7 +8,6 @@ from _backends import assert_backends_agree, needs_jax
 from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from hypothesis import given, strategies as st
 
-from radiomax.exceptions import ValidationError
 from radiomax.sar import (
     beta0_to_sigma0,
     dn_to_backscatter,
@@ -63,7 +62,7 @@ class TestDigitalNumbers:
         assert np.isnan(got).tolist() == [False, True, True, True]
 
     def test_complex_numbers_are_refused(self) -> None:
-        with pytest.raises(ValidationError, match="must be real"):
+        with pytest.raises(ValueError, match="must be real"):
             dn_to_backscatter(np.asarray([1.0 + 1.0j]), 300.0)
 
     def test_gradient_and_backends(self) -> None:

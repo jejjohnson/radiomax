@@ -1,91 +1,22 @@
-"""Labelled arrays: a DataArray in gives a DataArray out, aligned by dimension name."""
+"""Functions that consume a named dimension, on DataArrays.
+
+Elementwise functions go through ``pipekit_array.functions.elementwise``.
+"""
 
 from __future__ import annotations
 
-import functools
-import inspect
 import sys
 from collections.abc import Callable, Mapping
 from typing import Any
 
-import numpy as np
+from pipekit_array.functions import is_dataarray
 
-from radiomax._src.backend import array_namespace
 from radiomax.exceptions import ValidationError
 
 
 __all__ = [
     "apply_along",
-    "elementwise",
-    "is_dataarray",
 ]
-
-
-def is_dataarray(value: Any) -> bool:
-    """Say whether a value is an xarray DataArray, without importing xarray.
-
-    A DataArray can only exist once xarray is imported.
-
-    Examples:
-        >>> is_dataarray(1.0)
-        False
-    """
-    xarray = sys.modules.get("xarray")
-    return xarray is not None and isinstance(value, xarray.DataArray)
-
-
-def elementwise[**P, R](
-    *, n_outputs: int = 1
-) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    """Let an elementwise function take and return DataArrays.
-
-    Algorithm:
-        1. With no DataArray among the arguments, call the function as it is.
-        2. Otherwise hand every DataArray to ``xarray.apply_ufunc``, which
-           aligns them by dimension name and calls the function on their data.
-           The other arguments are passed through, and an output that does
-           not depend on every input is broadcast.
-        3. Return DataArrays with the inputs' coordinates, and without a name
-           or attributes, because the quantity and its unit have changed.
-
-    An array without dimension names cannot be aligned with one that has
-    them, so it is refused, unless it has no dimensions.
-
-    Args:
-        n_outputs: How many arrays the function returns; above 1, a tuple.
-
-    Returns:
-        The decorator.
-
-    Raises:
-        ValidationError: (the decorated function) if a DataArray meets an
-            array with dimensions but no names.
-
-    Examples:
-        >>> import numpy as np
-        >>> @elementwise()
-        ... def twice(x):
-        ...     return 2.0 * x
-        >>> twice(np.asarray([1.0, 2.0])).tolist()
-        [2.0, 4.0]
-    """
-
-    def decorate(function: Callable[P, R]) -> Callable[P, R]:
-        signature = inspect.signature(function)
-
-        @functools.wraps(function)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-            bound = signature.bind(*args, **kwargs)
-            # positions and keywords, with a variadic argument spread out
-            values = {**dict(enumerate(bound.args)), **bound.kwargs}
-            labelled = [k for k, v in values.items() if is_dataarray(v)]
-            if not labelled:
-                return function(*args, **kwargs)
-            return _apply(function, signature, values, labelled, n_outputs)
-
-        return wrapper
-
-    return decorate
 
 
 def apply_along(
@@ -147,69 +78,9 @@ def apply_along(
         input_core_dims=[core_dims[name] for name in given],
         output_core_dims=[output_dims],
         dask="allowed",
-        keep_attrs=False,
+        # for the coordinates: False would drop their attributes too
+        keep_attrs="drop_conflicts",
     )
-    return result.rename(None)
-
-
-def _apply(
-    function: Callable[..., Any],
-    signature: inspect.Signature,
-    values: dict[int | str, Any],
-    labelled: list[int | str],
-    n_outputs: int,
-) -> Any:
-    """Call ``function`` through ``xarray.apply_ufunc`` on its labelled arguments."""
-    xarray = sys.modules["xarray"]
-    for key, value in values.items():
-        if key not in labelled and _has_dimensions(value):
-            msg = (
-                f"'{_name(key, signature)}' has dimensions but no names, and cannot "
-                f"be aligned with the DataArray '{_name(labelled[0], signature)}'; "
-                "make it a DataArray too"
-            )
-            raise ValidationError(msg)
-
-    def on_data(*data: Any) -> Any:
-        given = values | dict(zip(labelled, data, strict=True))
-        args = [value for key, value in given.items() if isinstance(key, int)]
-        kwargs = {key: value for key, value in given.items() if isinstance(key, str)}
-        result = function(*args, **kwargs)
-        # xarray needs every output in the inputs' common shape, and one that
-        # does not depend on an input lacks that input's dimensions
-        shape = np.broadcast_shapes(*(array.shape for array in data))
-        outputs = result if n_outputs > 1 else (result,)
-        outputs = tuple(
-            array_namespace(output).broadcast_to(output, shape) for output in outputs
-        )
-        return outputs if n_outputs > 1 else outputs[0]
-
-    result = xarray.apply_ufunc(
-        on_data,
-        *(values[key] for key in labelled),
-        output_core_dims=[()] * n_outputs,
-        dask="allowed",
-        keep_attrs=False,
-    )
-    if n_outputs == 1:
-        return result.rename(None)
-    return tuple(array.rename(None) for array in result)
-
-
-def _name(key: int | str, signature: inspect.Signature) -> str:
-    """The parameter at a position, or of a keyword."""
-    if isinstance(key, str):
-        return key
-    parameters = list(signature.parameters.values())
-    for parameter in parameters[:key]:
-        # it takes every position from its own on
-        if parameter.kind is inspect.Parameter.VAR_POSITIONAL:
-            return parameter.name
-    return parameters[key].name
-
-
-def _has_dimensions(value: Any) -> bool:
-    """Whether a value is an array or a sequence, rather than a number or an option."""
-    if isinstance(value, (list, tuple)):
-        return True
-    return getattr(value, "ndim", 0) > 0
+    result = result.rename(None)
+    result.attrs = {}
+    return result

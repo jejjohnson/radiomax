@@ -6,8 +6,8 @@ import sys
 from types import ModuleType
 from typing import Any, Literal
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise, is_dataarray
+from pipekit_array.functions import elementwise, floating_inputs, is_dataarray, like
+
 from radiomax._src.numerics import full_turn, to_radians
 from radiomax._src.retrievals.coefficients import unpack_coefficients
 from radiomax.exceptions import ValidationError

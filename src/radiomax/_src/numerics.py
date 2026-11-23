@@ -6,7 +6,7 @@ import math
 from types import ModuleType
 from typing import Any
 
-from radiomax._src.backend import like
+from pipekit_array.functions import like
 
 
 __all__ = [

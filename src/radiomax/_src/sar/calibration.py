@@ -5,8 +5,8 @@ from __future__ import annotations
 from types import ModuleType
 from typing import Any
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
+from pipekit_array.functions import elementwise, floating_inputs, like
+
 from radiomax._src.numerics import full_turn, to_radians
 
 

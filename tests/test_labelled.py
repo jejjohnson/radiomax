@@ -7,10 +7,9 @@ from typing import Any
 
 import numpy as np
 import pytest
+from pipekit_array.functions import elementwise, floating_inputs, is_dataarray
 
-from radiomax import BackendError, ValidationError
-from radiomax._src.backend import floating_inputs
-from radiomax._src.labelled import elementwise, is_dataarray
+from radiomax import BackendError
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -49,7 +48,7 @@ def counts(xr):
         dims=("band", "x"),
         coords={
             "band": ["B6", "B7"],
-            "x": [1, 2, 3],
+            "x": ("x", [1, 2, 3], {"units": "km"}),
             "wavelength": ("band", [1.6, 2.2]),
         },
         name="counts",
@@ -78,6 +77,7 @@ def test_coordinates_stay_and_the_name_and_attributes_go(counts) -> None:
     assert set(out.coords) == {"band", "x", "wavelength"}
     assert out.name is None
     assert out.attrs == {}
+    assert out.x.attrs == {"units": "km"}
     assert out.dtype == np.float32
     np.testing.assert_array_equal(out.values, 2.0 * counts.values)
 
@@ -102,7 +102,7 @@ def test_mismatched_coordinates_raise(counts, gain) -> None:
 
 @pytest.mark.parametrize("plain", [np.ones(3), [1.0, 1.0, 1.0], (1.0, 1.0, 1.0)])
 def test_an_array_without_names_is_not_guessed(counts, plain) -> None:
-    with pytest.raises(ValidationError, match="'slope' has dimensions but no names"):
+    with pytest.raises(ValueError, match="'slope' has dimensions but no names"):
         affine(counts, plain)
 
 
@@ -195,7 +195,7 @@ def test_variadic_arguments_align_by_name_too(xr) -> None:
     got = total(1.0, 2.0, a, b, scale=2.0)
     assert got.dims == ("x", "y")
     np.testing.assert_array_equal(got, 2.0 * (3.0 + (a + b)))
-    with pytest.raises(ValidationError, match="'others' has dimensions"):
+    with pytest.raises(ValueError, match="'others' has dimensions"):
         total(a, 1.0, np.ones(2))
-    with pytest.raises(ValidationError, match="'scale' has dimensions"):
+    with pytest.raises(ValueError, match="'scale' has dimensions"):
         total(a, scale=np.ones(2))

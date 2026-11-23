@@ -6,9 +6,7 @@ from types import ModuleType
 from typing import Any
 
 from geophysix.constants import STANDARD, Constants
-
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
+from pipekit_array.functions import elementwise, floating_inputs, like
 
 
 __all__ = [
