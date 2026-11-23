@@ -8,7 +8,7 @@ The public API is the set of public modules below, plus the exceptions that `rad
 |---|---|---|
 | [`radiomax.geometry`](geometry.md) | Sun and view angles, the Earth–Sun distance, phase and scattering angles, air masses; parallax, navigation and scan geometry are planned | in progress |
 | [`radiomax.radiometry`](radiometry.md) | Counts, radiance, reflectance, band averages, response matrices, spectral densities | available |
-| [`radiomax.thermal`](thermal.md) | Planck's law per wavenumber, its logarithm, and its views per µm and per GHz; brightness temperatures are planned | in progress |
+| [`radiomax.thermal`](thermal.md) | Planck's law per wavenumber, its logarithm, and its views per µm and per GHz, monochromatic brightness temperature; the band inverses sensors publish are planned | in progress |
 | `radiomax.retrievals` | Empirical formulas with given coefficients | planned |
 | `radiomax.sar` | SAR calibration | planned |
 | `radiomax.altimetry` | Altimeter range corrections | planned |
