@@ -58,3 +58,21 @@ jobs:
           "import importlib.util as u, sys; sys.exit(any(map(u.find_spec, ('jax', 'xarray'))))"
       - name: Run the tests without them
         run: /tmp/base/bin/python -m pytest -o addopts= tests
+
+  test-with-torch:
+    name: with torch 2.10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+      # In this version `torch.asarray` detaches its input, which 2.13 does not,
+      # so the tests that gradients survive can fail here.
+      - name: Install the package, pytest and CPU torch
+        run: |
+          uv venv /tmp/torch
+          uv pip install --python /tmp/torch --index https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          uv pip install --python /tmp/torch . pytest hypothesis array-api-strict cyclopts loguru
+      - name: Run the tests with torch
+        run: /tmp/torch/bin/python -m pytest -o addopts= tests

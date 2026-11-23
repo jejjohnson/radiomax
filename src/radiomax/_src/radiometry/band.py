@@ -6,7 +6,13 @@ import functools
 from types import ModuleType
 from typing import Any, Literal
 
-from radiomax._src.backend import floating_inputs, like
+from radiomax._src.backend import (
+    device_of,
+    floating_inputs,
+    is_host,
+    like,
+    place,
+)
 from radiomax._src.labelled import apply_along, is_dataarray
 from radiomax.exceptions import ValidationError
 
@@ -216,10 +222,11 @@ def _kept(f: Any, where: Any, nan_policy: str, xp: ModuleType) -> Any:
     """The samples to keep, in the spectrum's shape, or ``None`` for all."""
     kept = None
     if where is not None:
-        mask = xp.asarray(where)
-        if not xp.isdtype(mask.dtype, "bool"):
-            msg = f"'where' must be boolean, got dtype {mask.dtype}"
+        dtype = xp.asarray(where).dtype if is_host(where) else where.dtype
+        if not xp.isdtype(dtype, "bool"):
+            msg = f"'where' must be boolean, got dtype {dtype}"
             raise ValidationError(msg)
+        mask = place(where, xp, dtype, device_of(f, xp))
         kept = xp.broadcast_to(mask, f.shape)
     if nan_policy == "omit":
         present = ~xp.isnan(f)

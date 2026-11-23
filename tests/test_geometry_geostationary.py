@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from _backends import assert_backends_agree, needs_jax
+from _backends import SECOND_DEVICE, assert_backends_agree, needs_jax
 from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from _oracles import proj_geostationary
 from geophysix.earth import WGS84
@@ -179,6 +179,7 @@ class TestGeostationary:
             y,
             rtol=1e-11,
             rtol32=1e-4,
+            waits=SECOND_DEVICE,
         )
         assert_traces(
             lambda x, y: geostationary_lonlat(x, y, **options),
@@ -193,6 +194,7 @@ class TestGeostationary:
             lat,
             rtol=1e-11,
             rtol32=1e-4,
+            waits=SECOND_DEVICE,
         )
         assert_traces(
             lambda lon, lat: geostationary_scan_angles(lon, lat, **options),
