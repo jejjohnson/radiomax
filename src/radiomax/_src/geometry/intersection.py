@@ -6,9 +6,8 @@ from types import ModuleType
 from typing import Any
 
 from geophysix.earth import WGS84, Ellipsoid
+from pipekit_array.functions import elementwise, floating_inputs, like
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
 from radiomax._src.numerics import safe_sqrt
 
 

@@ -5,7 +5,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
-from radiomax._src.labelled import is_dataarray
+from pipekit_array.functions import is_dataarray
+
 from radiomax.exceptions import ValidationError
 
 

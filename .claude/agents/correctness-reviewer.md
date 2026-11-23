@@ -19,7 +19,7 @@ The diff (`git diff <base>...HEAD`, default base `main`) or the files you are gi
 5. **Edges.** Sun overhead, nadir and the hotspot (zero angles), the terminator and the limb (90°), the night side, longitude at ±180°, the poles, a zero or negative radiance, an all-zero response. Each returns its limit or NaN as documented.
 6. **Gradients.** A `where` whose unused branch is `nan` or `inf` (the single-`where` trap); `sqrt`, `arcsin` or `arccos` at the edge of its domain; a `clip` on the gradient path, whose gradient JAX splits at the bound; a branch on a traced value in Python `if`.
 7. **Mutation and records.** An input array modified in place; a mutable default; a record that is not a frozen dataclass of floats, or is passed positionally where the contract says keyword with a default.
-8. **Errors.** A bare `except`, an exception that is not a `RadiomaxError`, a message that does not name the argument and the bad value, a cause dropped (`raise … from err` missing).
+8. **Errors.** A bare `except`, an exception that is not a `RadiomaxError` (the array backend's aside), a message that does not name the argument and the bad value, a cause dropped (`raise … from err` missing).
 9. **Docs that lie.** A docstring `Examples:` output the code does not print, `Raises:` listing an error the code never raises, an equation above a line that disagrees with the code, a quoted reference value with no source.
 10. **Tests.** An assertion with a tolerance and no comment saying where it comes from; an oracle (pvlib, georeader, pyproj) test that does not skip when the package is missing; a test that passes for the wrong reason (asserting on the input, on `shape` only); the edge or float32 case with no test; a slow test without `@pytest.mark.slow`.
 

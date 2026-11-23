@@ -16,7 +16,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 | Module | Owns | Status |
 |---|---|---|
 | `_typing.py` | The `ArrayLike` type alias | now |
-| `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclasses `BackendError`, `ValidationError` | now |
+| `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclass `ValidationError`; pipekit's `BackendError` | now |
 | `geometry` | Sun and view angles, relative azimuth, phase and scattering angles, air masses, the Earth–Sun distance, the two time arrays, the ray–ellipsoid intersection, parallax, geostationary navigation, whiskbroom scan geometry | now |
 | `radiometry` | Counts, radiance, reflectance, band averages, response matrices, spectral densities | now |
 | `thermal` | Planck's law per wavenumber, its logarithm and its views per µm and per GHz, monochromatic brightness temperature, the band inverses sensors publish | now |
@@ -26,8 +26,8 @@ The public API is the set of public modules below; private code lives in `src/ra
 
 ### Boundaries
 
-- **Layer rule.** radiomax imports geophysix and nothing else from the GeoStack at runtime. It never imports gridax, integrix, functax, pipekit, geotoolz, georeader or any GeoModels library; radtrax, geoops, geoproducts and xrops import it. integrix and functax are reference libraries in the tests.
-- **Three runtime dependencies**: `numpy>=2.0`, `geophysix` and `array-api-compat`. JAX and xarray are extras, and any other optional one goes behind an extra and an in-function import that names the extra when it is missing.
+- **Layer rule.** radiomax imports geophysix and the array backend `pipekit_array.functions`, and nothing else from the GeoStack at runtime (pipekit is Core, below GeoNumerics; decided in jejjohnson/pipekit#244). It never imports the operators or carriers of pipekit, gridax, integrix, functax, geotoolz, georeader or any GeoModels library; radtrax, geoops, geoproducts and xrops import it. integrix and functax are reference libraries in the tests.
+- **Three runtime dependencies**: `numpy>=2.0`, `geophysix` and `pipekit-array[numpy,compat]`, which brings pipekit-ops and `array-api-compat`. pipekit is pinned to one git tag until it is on PyPI (jejjohnson/pipekit#247). JAX and xarray are extras, and any other optional one goes behind an extra and an in-function import that names the extra when it is missing.
 - **Ownership test.** Does it need a model of radiation moving through an atmospheric state? Then it is radtrax's. Is it geometry, a unit conversion, or an empirical formula with given coefficients, applied pixel by pixel? Then it belongs here. A constant or a fact about the Earth itself is geophysix's.
 - **No files.** radiomax reads no files and downloads nothing: coefficients, spectra and responses arrive as arrays from the readers.
 
@@ -40,7 +40,7 @@ Each foundation brings a rule. Breaking one runs fine on your machine and fails 
 | Foundation | The package uses it for | The rule it brings |
 |---|---|---|
 | **NumPy ≥ 2.0** | The default namespace; host-side builders | NumPy in gives NumPy out; no function needs JAX or xarray installed. |
-| **array-api-compat** | Finding the namespace of an input | Only functions of the array API standard are called on it; `array_api_strict` in the tests refuses the rest. |
+| **pipekit-array** (`pipekit_array.functions`) | The namespace, the dtype and the device of a call, and DataArrays | A change to them is made there, so that geophysix and gridax get it too. Only functions of the array API standard are called on the namespace; `array_api_strict` in the tests refuses the rest. |
 | **geophysix** | Constants, `Ellipsoid`, Earth-centred coordinates | No constant or Earth radius is written here. |
 | **JAX** (extra `jax`) | The same functions under `jit`, `vmap` and `grad` | Never imported at module level. |
 | **xarray** (extra `xarray`) | A DataArray in, a DataArray out | Imported only when a DataArray arrives. |
@@ -81,10 +81,10 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | An OCx band ratio, or its published coefficients | `radiomax.retrievals.band_ratio_chlorophyll`, `OCX_R2022` (a new table is a new `BandRatioTable` with its source, read there, and a test that pins every number) |
 | A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
 | A frozen record that must be a JAX pytree | `@register_record` from `radiomax._src.records` |
-| `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `radiomax._src.backend.array_namespace`, `floating_inputs` |
-| A constant as an array of the input's dtype, on its device | `radiomax._src.backend.like`; `place` for a value that is not a float |
-| `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` from `radiomax._src.labelled`, `apply_along` for a function that consumes a named dimension, `is_dataarray` |
-| A new exception for a bad argument, or for an unknown array library | `ValidationError`, `BackendError` |
+| `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `namespace_of`, `floating_inputs` from `pipekit_array.functions` |
+| A constant as an array of the input's dtype, on its device | `pipekit_array.functions.like` |
+| `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` and `is_dataarray` from `pipekit_array.functions`; `radiomax._src.labelled.apply_along` for a function that consumes a named dimension |
+| A new exception for a bad argument | `ValidationError` |
 
 ## The contracts
 
@@ -95,7 +95,7 @@ Everything composes because it keeps these contracts; the tests in "What enforce
 These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/15), where the measurements behind them are.
 
 - **Arrays.** One implementation in functions of the Python array API standard. The namespace comes from the input: NumPy in gives NumPy out, JAX in gives JAX out, and the same for CuPy and any array-API library. JAX and xarray are never imported at module level. `xp, (x, y) = floating_inputs(x, y)` opens every function; a NumPy array joins the other library, and two other libraries in one call raise `BackendError`. Host values go to the arrays' device, and an array that already belongs to the library is never passed to `asarray`, which detaches a torch tensor in some versions.
-- **xarray.** A DataArray in gives a DataArray out, through `xr.apply_ufunc`, with dimensions aligned by name; `@elementwise` does it. An unlabelled array with dimensions next to a DataArray raises `ValidationError`, and the result has no name and no attributes.
+- **xarray.** A DataArray in gives a DataArray out, through `xr.apply_ufunc`, with dimensions aligned by name; `@elementwise` does it, and takes every other carrier with a pipekit adapter too (`DimArray`, `GeoArray`). An unlabelled array with dimensions next to a DataArray raises `ValueError`. The result has no name and no attributes, and its coordinates keep theirs.
 - **dtype.** float32 stays float32; integer arrays become the namespace's default float; constants enter in the input's dtype.
 - **Units.** SI, with two named exceptions: angles are degrees by default (`degrees=False` for radians), never guessed from the magnitude, and spectral code uses wavenumber in cm⁻¹, in arguments named `wavenumber_cm`.
 - **Arguments.** Longitude before latitude; an `Ellipsoid` or `Constants` record as a keyword with a default; nothing reads a global.
@@ -109,7 +109,7 @@ These are the decisions of [#15](https://github.com/jejjohnson/radiomax/issues/1
 
 ### 2. Exceptions
 
-- Every error derives from `RadiomaxError`, which is a `ValueError`: `ValidationError` is a bad argument (its shape, a dimension name, its value), `BackendError` an array of an unknown library or of several in one call. A new error goes into `exceptions.py`, is exported, and joins the list in `tests/test_exceptions.py`.
+- Every error derives from `RadiomaxError`, which is a `ValueError`: `ValidationError` is a bad argument (its shape, a dimension name, its value). The one exception is the array backend, which is shared: pipekit's `BackendError` (a `TypeError` and a `ValueError`) for an array of an unknown library or of several in one call, and a plain `ValueError` for an input that is not real or an unlabelled array next to a DataArray. A new error goes into `exceptions.py`, is exported, and joins the list in `tests/test_exceptions.py`.
 
 ### The public API
 
@@ -127,7 +127,7 @@ Most rules here are tests, so CI tells you when one breaks. Read a test's docstr
 | `tests/test_public_api.py` | `__all__` sorted, unique and importable; `SUBMODULES` is exactly the set of modules; every submodule declares a sorted `__all__`; the `py.typed` marker ships; `__version__` is dotted |
 | `tests/test_capabilities.py` | `docs/api/capabilities.md` is current; no name is bound to two different objects |
 | `--doctest-modules` on `src/radiomax` (`addopts`) | Every docstring `Examples:` block runs and prints what it says |
-| `tests/test_exceptions.py` | The hierarchy: every error is a `RadiomaxError`, which is a `ValueError` |
+| `tests/test_exceptions.py` | The hierarchy: every error is a `RadiomaxError`, which is a `ValueError`; `BackendError` is pipekit's |
 | `tests/test_build_docs.py` | The two-tool docs pipeline: inventory parsing, anchor repair, link checking, the inventory port and the absolute nav URL in `docs/myst.yml`, the files copied to the site root (`ROOT_FILES`) |
 | `tests/conftest.py` | `jax_enable_x64` is on whenever JAX is importable |
 | `tests/test_harness.py` | The harness itself: each check in `tests/_harness.py` and `tests/_backends.py` passes on a right function and fails on a wrong one, each reference in `tests/_oracles.py` agrees with a closed form, and the stored radtrax values are what their names say |

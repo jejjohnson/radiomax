@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
+from pipekit_array.functions import elementwise, floating_inputs, like
 
 
 __all__ = [

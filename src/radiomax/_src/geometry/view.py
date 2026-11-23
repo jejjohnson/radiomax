@@ -6,9 +6,8 @@ import math
 from typing import Any
 
 from geophysix.earth import WGS84, Ellipsoid, geodetic_to_ecef
+from pipekit_array.functions import elementwise, floating_inputs, like
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
 from radiomax._src.numerics import safe_atan2, safe_sqrt, to_radians, wrap_turn
 
 

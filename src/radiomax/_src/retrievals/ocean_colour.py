@@ -9,8 +9,8 @@ from collections.abc import Mapping, Sequence
 from types import MappingProxyType
 from typing import Any
 
-from radiomax._src.backend import floating_inputs, like
-from radiomax._src.labelled import elementwise
+from pipekit_array.functions import elementwise, floating_inputs, like
+
 from radiomax._src.retrievals.coefficients import unpack_coefficients
 from radiomax.exceptions import ValidationError
 

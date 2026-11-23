@@ -2076,6 +2076,27 @@ wheels = [
 ]
 
 [[package]]
+name = "pipekit-array"
+version = "0.1.2"
+source = { git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-array&tag=pipekit-ops-v0.2.2#49beb8fe4a8a6ce5662bc75ad495067a9e6ea6ce" }
+dependencies = [
+    { name = "pipekit-ops" },
+]
+
+[package.optional-dependencies]
+compat = [
+    { name = "array-api-compat" },
+]
+numpy = [
+    { name = "numpy" },
+]
+
+[[package]]
+name = "pipekit-ops"
+version = "0.2.2"
+source = { git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-ops&tag=pipekit-ops-v0.2.2#49beb8fe4a8a6ce5662bc75ad495067a9e6ea6ce" }
+
+[[package]]
 name = "platformdirs"
 version = "4.9.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2493,12 +2514,12 @@ wheels = [
 
 [[package]]
 name = "radiomax"
-version = "0.0.6"
+version = "0.0.7"
 source = { editable = "." }
 dependencies = [
-    { name = "array-api-compat" },
     { name = "geophysix" },
     { name = "numpy" },
+    { name = "pipekit-array", extra = ["compat", "numpy"] },
 ]
 
 [package.optional-dependencies]
@@ -2551,10 +2572,10 @@ typecheck = [
 
 [package.metadata]
 requires-dist = [
-    { name = "array-api-compat", specifier = ">=1.11" },
     { name = "geophysix", git = "https://github.com/jejjohnson/geophysix?tag=v0.0.5" },
     { name = "jax", marker = "extra == 'jax'", specifier = ">=0.4.30" },
     { name = "numpy", specifier = ">=2.0" },
+    { name = "pipekit-array", extras = ["numpy", "compat"], git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-array&tag=pipekit-ops-v0.2.2" },
     { name = "xarray", marker = "extra == 'xarray'", specifier = ">=2024.6" },
 ]
 provides-extras = ["jax", "xarray"]

@@ -32,7 +32,6 @@
 "area:backend":
   - changed-files:
     - any-glob-to-any-file:
-      - "src/radiomax/_src/backend.py"
       - "src/radiomax/_src/labelled.py"
 
 "area:geometry":
