@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 from geophysix.earth import SPHERE
 
-from radiomax._src.backend import array_namespace, floating_inputs, like
+from radiomax._src.backend import floating_inputs, like
 from radiomax._src.labelled import elementwise, is_dataarray
 from radiomax._src.numerics import safe_sqrt, to_radians
 from radiomax.exceptions import ValidationError
@@ -218,7 +218,8 @@ def bowtie_detector_positions(
             xp.reshape(like(rows, along_orbit_growth, xp), shape)
             for rows in (offset, shifted)
         )
-        step = xp.asarray(step)
+        # through the growth's dtype, which puts it where the growth is
+        step = xp.astype(like(step, along_orbit_growth, xp), xp.int32)
     # k₀ = c + (m − c) / g
     own = _position(offset, along_orbit_growth, centre)
     # k₁ = c + (m − c ∓ N) / g
@@ -228,7 +229,5 @@ def bowtie_detector_positions(
 
 @elementwise()
 def _position(offset: Any, growth: Any, centre: float) -> Any:
-    xp = array_namespace(offset, growth)
-    growth = xp.asarray(growth)
-    offset = xp.astype(xp.asarray(offset), growth.dtype)
-    return like(centre, growth, xp) + offset / growth
+    xp, (growth,) = floating_inputs(growth)
+    return like(centre, growth, xp) + like(offset, growth, xp) / growth
