@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 from types import ModuleType
 from typing import Any, Literal
 
@@ -173,8 +174,9 @@ def _average(
     spectrum: Any,
     responses: Any,
     wavelength: Any,
-    weights: Any,
-    where: Any,
+    weights: Any = None,
+    where: Any = None,
+    *,
     nan_policy: str,
 ) -> Any:
     """`band_average` on arrays, wavelength last."""
@@ -239,23 +241,11 @@ def _labelled_average(arrays: dict[str, Any], nan_policy: str, dim: str | None) 
         msg = "'responses' must be a DataArray when another input is one"
         raise ValidationError(msg)
     band_dims = tuple(name for name in responses.dims if name != dim)
-    given = {name: value for name, value in arrays.items() if value is not None}
-
-    def on_data(*data: Any) -> Any:
-        inputs = dict.fromkeys(arrays) | dict(zip(given, data, strict=True))
-        return _average(nan_policy=nan_policy, **inputs)
-
-    core_dims = {
-        "spectrum": (dim,),
-        "responses": (*band_dims, dim),
-        "wavelength": (dim,),
-        "weights": (dim,),
-        "where": (dim,),
-    }
+    core_dims = dict.fromkeys(arrays, (dim,)) | {"responses": (*band_dims, dim)}
     return apply_along(
-        on_data,
-        given,
-        {name: core_dims[name] for name in given},
+        functools.partial(_average, nan_policy=nan_policy),
+        arrays,
+        core_dims,
         dim=dim,
         output_dims=band_dims,
     )
