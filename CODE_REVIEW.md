@@ -1,8 +1,6 @@
 # Code Review Agent Instructions
 
-Standing instructions for **all** agents performing code reviews on this repository. Read "Reuse before you write", "The contracts" and "What enforces them" in [`AGENTS.md`](AGENTS.md) first; this file is the checklist and the report format. Most defects worth finding are a contract broken in a way the tests cannot see (an input mutated on one path, a validator skipped, an unfitted transform that quietly does nothing, a docstring that promises what the code does not do) or a re-implementation of something the package already has, not style.
-
-<!-- template-example: this file's sections 2 and "Package-Specific Checks" describe the example package. -->
+Standing instructions for **all** agents performing code reviews on this repository. Read "Reuse before you write", "The contracts" and "What enforces them" in [`AGENTS.md`](AGENTS.md) first; this file is the checklist and the report format. Most defects worth finding are a contract broken in a way the tests cannot see (a constant that promotes float32, degrees read as radians, radiance per µm read as per cm⁻¹, a lost DataArray label, a docstring that promises what the code does not do) or a re-implementation of something the package already has, not style.
 
 ---
 
@@ -38,31 +36,33 @@ Skip anything ruff, ty or the tests already enforce (formatting, import order, `
 
 ### 1. Reuse and boundaries
 
-- Every function, class or module the diff **adds** has been checked against [`docs/api/capabilities.md`](docs/api/capabilities.md) and the private helpers in "Reuse before you write" in `AGENTS.md`. A re-implemented validator, statistic, filter, padding rule, buffer or transform is a **High** finding, with the existing name to use.
+- Every function, class or module the diff **adds** has been checked against [`docs/api/capabilities.md`](docs/api/capabilities.md) and the private helpers in "Reuse before you write" in `AGENTS.md`. A re-implemented Earth radius or physical constant (geophysix has it), solar angle, air mass, reflectance or Planck formula is a **High** finding, with the existing name to use.
 - No new runtime dependency without discussion; an optional one sits behind an extra and an in-function import that names the extra. `uv.lock` is updated with any dependency change.
-- Imports keep pointing one way (the module table in `AGENTS.md`); the library never imports the CLI.
+- Imports keep pointing one way (the module table in `AGENTS.md`); the library imports geophysix and never gridax, integrix, functax, pipekit, geotoolz, georeader or any model at runtime.
 - A rename or removal of a public name keeps the old name working with a `DeprecationWarning` for at least one release.
 
 ### 2. The contracts
 
-<!-- template-example: the example package's contracts; replace with your package's. -->
-
-- **Public functions** validate once, at the boundary, with `as_floats` / `require_non_empty` / `require_positive`; raise `ValidationError` / `EmptySeriesError` whose message names the argument; return a **new** list and never mutate the input; use `math.fsum` for sums; turn degenerate input into an error, not a `nan`.
-- **Transforms** satisfy `Transform` structurally (no base class); stateless ones are frozen dataclasses whose `fit` returns `self`; fitted ones keep learned state in `init=False` trailing-underscore fields, return `self` from `fit`, and raise `NotFittedError` from `apply` before `fit`; every transform has `fit_apply`; constructor arguments are validated in `__post_init__`; the transform joins `TestProtocols` in `tests/test_transforms.py`.
-- **CLI** subcommands are a subparser plus a `_run_<name>` handler in `main`'s `handlers`; they write only to the injected `out`, read through `_read_values`, validate options with an `argparse` `type=`, and never `print` or `sys.exit`.
-- **Exceptions** derive from `MypackageError` and the closest stdlib exception; errors are chained (`raise … from err`).
+- **Arrays.** A function computes in the namespace of its inputs, with array API functions only; NumPy in gives NumPy out; JAX and xarray are never imported at module level.
+- **xarray.** A DataArray in gives a DataArray out, aligned by dimension name.
+- **Constants** enter in the input's dtype (`xp.asarray(c, dtype=x.dtype)`); float32 in gives float32 out.
+- **Units.** SI; degrees unless `degrees=False`, never guessed; wavenumber in cm⁻¹ where the argument is named `wavenumber_cm`. Per µm, per nm and per cm⁻¹ are never mixed.
+- **Arguments.** Longitude before latitude; records as keyword arguments with defaults; time as `day` and `seconds`.
+- **Invalid pixels** are NaN through a double `where`; nadir, the terminator and the limb return their limit with a finite gradient.
+- **Pure.** Return a new array and never mutate the input.
+- **Exceptions** derive from `RadiomaxError` (a `ValueError`); errors are chained (`raise … from err`).
 
 ### 3. Public API and documentation
 
 - New names: in the module's `__all__` and the top-level `__all__`; a new module in `SUBMODULES` (`tests/test_public_api.py`), with its `docs/api/<module>.md` page, a `nav` entry in `mkdocs.yml` and a row in `docs/api/index.md`; `docs/api/capabilities.md` regenerated (`uv run poe capabilities`).
 - Docstrings in the `python-style` layout: summary, the defining equation in Unicode (`eman-style-math`; `$…$` in a docstring is a finding), `Algorithm:` for a method, `Args:` with meaning and symbol, `Returns:` and `Raises:` matching the code, and two or three executable `Examples:` (typical, edge, composition) whose output is what the code prints (rounded values, not 17-digit floats).
 - Maths in MyST and MkDocs pages uses the `eman-style-math` macros, defines every symbol with its shape, keeps each expression on one line and has no spacing macros (`\,`, `\quad`, …).
-- Prose pages: MyST directives, not MkDocs-Material syntax; API links by the top-level name (`xref:api#mypackage.<Name>`); a new page or notebook in the `docs/myst.yml` toc with a basename unique across `docs/`.
+- Prose pages: MyST directives, not MkDocs-Material syntax; API links by the top-level name (`xref:api#radiomax.<Name>`); a new page or notebook in the `docs/myst.yml` toc with a basename unique across `docs/`.
 - Notebooks committed executed, with no error outputs, and every number quoted in the prose matching the printed output.
 
 ### 4. Tests
 
-- Each behaviour is checked against a closed form, a hand computation or a published value; edge cases (empty input, a single value, a constant series, invalid arguments, overflow) have their own tests.
+- Each behaviour is checked against an oracle (pvlib, georeader, pyproj, a stored value or a hand computation), a `hypothesis` property, a gradient check, and a parity test over NumPy, JAX, `array_api_strict` and DataArray; nadir, the terminator, the limb and the float32 dtype have their own tests.
 - New code is covered (the 90 % gate is global, so a well-covered package can hide an untested module: look at the diff, not the total).
 - Randomness, if any, is seeded; a statistical assertion is bounded by the statistic's own sampling distribution, with the bound's source in a comment.
 - Tier markers right: unmarked under ~1 s, `slow` above, `integration` for end-to-end workflows and optional dependencies.
@@ -72,8 +72,8 @@ Skip anything ruff, ty or the tests already enforce (formatting, import order, `
 - `from __future__ import annotations`; type hints on every public function; `X | None`, built-in generics, PEP 695 `type` aliases.
 - `dataclasses` with `slots=True` for data containers (`frozen=True` when immutable); `Enum` / `StrEnum` for fixed sets of options; `pathlib`; f-strings; context managers for resources.
 - Specific exceptions, chained with `raise … from …`; guard clauses over deep nesting.
-- `python-style` comments and naming: comments above the line, never beside it; a Unicode equation above each mathematical line; descriptive names, with the symbol only in the comment; one operation per line. In a JAX package, its JAX rules too (jaxtyping dims, einx, lineax, `eqx.error_if`, the four tests per public forward).
-- New CLIs and scripts use `cyclopts` and `loguru`, not argparse, click, typer, `print` progress or stdlib `logging` (the example CLI's `argparse` is a documented exception).
+- `python-style` comments and naming: comments above the line, never beside it; a Unicode equation above each mathematical line; descriptive names, with the symbol only in the comment; one operation per line.
+- New CLIs and scripts use `cyclopts` and `loguru`, not argparse, click, typer, `print` progress or stdlib `logging`.
 - A dependency, when one is justified, follows the preferences in `.github/instructions/python-coding.instructions.md`.
 
 ### 6. Security
@@ -85,108 +85,87 @@ Skip anything ruff, ty or the tests already enforce (formatting, import order, `
 
 ## Package-Specific Checks
 
-<!-- template-example: these patterns are the example package's; replace them with the defects your package is prone to. Every example here runs. -->
+Each example below runs on NumPy alone.
 
-### Validate once, at the boundary
+### Constants take the input's dtype
 
 ```python
-# ❌ No validation: window=0 or an empty series fails deep inside max() with
-#    "max() iterable argument is empty", and a string slips through as text
-def rolling_max(series, window):
-    return [max(series[i : i + window]) for i in range(len(series) - window + 1)]
+import numpy as np
+
+AU_PERIHELION = 0.01671
 
 
-# ✅ The package's validators, and the package's error messages
-from mypackage import Series, require_non_empty, require_positive
+# ❌ A float64 array constant promotes a float32 input to float64
+def distance_bad(anomaly):
+    return 1.0 - np.asarray(AU_PERIHELION, dtype=np.float64) * np.cos(anomaly)
 
 
-def rolling_max(series: Series, window: int) -> list[float]:
-    values = require_non_empty(series)
-    window = require_positive(window, name="window")
-    return [max(values[i : i + window]) for i in range(len(values) - window + 1)]
+# ✅ The constant enters in the input's dtype
+def distance(anomaly):
+    amplitude = np.asarray(AU_PERIHELION, dtype=anomaly.dtype)
+    return 1.0 - amplitude * np.cos(anomaly)
+
+
+anomaly = np.asarray([0.0, 0.5], dtype=np.float32)
+assert distance_bad(anomaly).dtype == np.float64
+assert distance(anomaly).dtype == np.float32
 ```
 
-### Never mutate the input
+### Degrees or radians is an argument, never a guess
 
 ```python
-# ❌ Sorts the caller's list in place
-def upper_quartile(series: list[float]) -> float:
-    series.sort()
-    return series[(3 * len(series)) // 4]
+import numpy as np
 
 
-# ✅ Work on a fresh, validated copy, or reuse the existing statistic
-from mypackage import Series, quantile
+# ❌ Guesses the unit from the magnitude: 1.5 degrees is read as radians
+def cos_zenith_bad(zenith):
+    return np.cos(np.deg2rad(zenith) if np.max(np.abs(zenith)) > np.pi else zenith)
 
 
-def upper_quartile(series: Series) -> float:
-    return quantile(series, 0.75)
+# ✅ The caller says which, and the default is documented
+def cos_zenith(zenith, *, degrees: bool = True):
+    return np.cos(np.deg2rad(zenith) if degrees else zenith)
+
+
+assert np.isclose(cos_zenith(np.asarray(60.0)), 0.5)
 ```
 
-### A fitted transform fails loudly before `fit`
+### An invalid pixel is NaN, and its gradient does not spread
 
 ```python
-from dataclasses import dataclass, field
-from typing import Self
-
-from mypackage import NotFittedError, Series, as_floats, require_non_empty
+import numpy as np
 
 
-# ❌ Unfitted, `apply` silently behaves as the identity
-@dataclass(slots=True)
-class CenterSilently:
-    mean_: float | None = field(default=None, init=False)
+# ✅ The inner where keeps the unused branch finite, so the gradient of the
+#    valid pixels is too; a single outer where would differentiate log(0)
+def temperature(radiance):
+    positive = radiance > 0
+    safe = np.where(positive, radiance, 1.0)
+    return np.where(positive, 1.0 / np.log1p(1.0 / safe), np.nan)
 
-    def apply(self, series: Series) -> list[float]:
-        return [value - (self.mean_ or 0.0) for value in as_floats(series)]
 
-
-# ✅ The package's fit / apply lifecycle
-@dataclass(slots=True)
-class Center:
-    mean_: float | None = field(default=None, init=False)
-
-    def fit(self, series: Series) -> Self:
-        values = require_non_empty(series)
-        self.mean_ = sum(values) / len(values)
-        return self
-
-    def apply(self, series: Series) -> list[float]:
-        if self.mean_ is None:
-            msg = "Center is not fitted; call .fit(series) first"
-            raise NotFittedError(msg)
-        return [value - self.mean_ for value in as_floats(series)]
-
-    def fit_apply(self, series: Series) -> list[float]:
-        return self.fit(series).apply(series)
+assert np.isnan(temperature(np.asarray(0.0)))
+assert np.isfinite(temperature(np.asarray(0.1)))
 ```
 
-### Typed, chained errors that name the argument
+### arccos and arcsin at the edge of their domain
 
 ```python
-from mypackage import ValidationError
+import numpy as np
 
 
-# ❌ A bare except catches everything (KeyboardInterrupt included), and the
-#    error is a RuntimeError naming neither the argument nor the bad value
-def parse_alpha(text: str) -> float:
-    try:
-        return float(text)
-    except:  # noqa: E722
-        raise RuntimeError("bad input")
+# ❌ The derivative of arccos is infinite at ±1: the Sun overhead, nadir, the
+#    hotspot. A clip does not help: it hides the value and halves the gradient
+def zenith_bad(up):
+    return np.arccos(np.clip(up, -1.0, 1.0))
 
 
-# ✅ The package's error (also a ValueError), the argument's name, the cause
-def parse_alpha(text: str) -> float:
-    try:
-        alpha = float(text)
-    except ValueError as err:
-        msg = f"'alpha' must be a number, got {text!r}"
-        raise ValidationError(msg) from err
-    if not 0.0 < alpha <= 1.0:
-        msg = f"'alpha' must lie in (0, 1], got {alpha!r}"
-        raise ValidationError(msg)
-    return alpha
+# ✅ atan2 of the horizontal and vertical components
+def zenith(horizontal, up):
+    return np.arctan2(horizontal, up)
+
+
+assert zenith(0.0, 1.0) == 0.0
 ```
 
 ### Doctest output the code really prints
@@ -194,16 +173,17 @@ def parse_alpha(text: str) -> float:
 ```python
 # ❌ Expected output copied from a calculator: the doctest fails on the
 #    17th digit, or passes only on one platform
-#     >>> zscores([1.0, 2.0, 4.0])
-#     [-0.87, -0.22, 1.09]
+#     >>> cos_zenith(np.asarray(60.0))
+#     0.5
 
 # ✅ Round in the example, and paste what it prints
-#     >>> [round(z, 4) for z in zscores([1.0, 2.0, 4.0])]
-#     [-0.8729, -0.2182, 1.0911]
-from mypackage import zscores
+#     >>> round(float(cos_zenith(np.asarray(60.0))), 12)
+#     0.5
+import numpy as np
 
-assert [round(z, 4) for z in zscores([1.0, 2.0, 4.0])] == [-0.8729, -0.2182, 1.0911]
+assert round(float(np.cos(np.deg2rad(60.0))), 12) == 0.5
 ```
+
 
 ---
 
