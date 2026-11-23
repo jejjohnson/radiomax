@@ -1,6 +1,6 @@
 [project]
 name = "radiomax"
-version = "0.0.2"
+version = "0.0.3"
 description = "Observation geometry and radiometry on any array library."
 authors = [
     {name="J. Emmanuel Johnson", email="jemanjohnson34@gmail.com"},
