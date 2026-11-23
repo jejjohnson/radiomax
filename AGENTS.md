@@ -17,7 +17,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 |---|---|---|
 | `_typing.py` | The `ArrayLike` type alias | now |
 | `exceptions.py` | `RadiomaxError` (a `ValueError`) and its subclasses `BackendError`, `ValidationError` | now |
-| `geometry` | Sun and view angles, relative azimuth, phase and scattering angles, air masses, the Earth–Sun distance, the two time arrays, the ray–ellipsoid intersection, parallax; planned: navigation, scan geometry | now |
+| `geometry` | Sun and view angles, relative azimuth, phase and scattering angles, air masses, the Earth–Sun distance, the two time arrays, the ray–ellipsoid intersection, parallax, geostationary navigation; planned: scan geometry | now |
 | `radiometry` | Counts, radiance, reflectance, band averages, response matrices, spectral densities | now |
 | `thermal` | Planck's law per wavenumber, its logarithm and its views per µm and per GHz, monochromatic brightness temperature, the band inverses sensors publish | now |
 | `retrievals` | Empirical formulas with given coefficients: Ross–Li kernels, split-window temperatures, ocean colour | planned |
@@ -65,6 +65,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | A solar zenith angle, a declination, an Earth–Sun distance, a Julian date | `radiomax.geometry.solar_angles`, `solar_zenith`, `solar_declination`, `earth_sun_distance`, `utc_day_seconds` |
 | A view zenith from a satellite's position, `arccos(cos(vaa - saa))`, a phase or scattering angle | `radiomax.geometry.view_angles`, `relative_azimuth`, `phase_angle`, `scattering_angle` |
 | `1 / cos(sza) + 1 / cos(vza)`, a Chapman or spherical air mass | `radiomax.geometry.air_mass_factor`, `shell_air_mass` |
+| Scan angles to longitude and latitude, an off-Earth mask of a geostationary disk | `radiomax.geometry.geostationary_lonlat`, `geostationary_scan_angles` |
 | The quadratic of a line of sight and the Earth, a parallax shift | `radiomax.geometry.earth_intersection`, `apparent_position`; `near_root` from `radiomax._src.geometry.intersection` inside the package |
 | `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`, `safe_sqrt`, `safe_atan2` |
 | `gain * dn + offset`, `pi * L * d**2 / (E0 * cos(sza))` or its inverse | `radiomax.radiometry.counts_to_radiance`, `radiance_to_counts`, `counts_to_reflectance`, `reflectance`, `radiance_from_reflectance` |

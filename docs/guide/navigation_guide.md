@@ -42,3 +42,27 @@ A target below the satellite's horizon is hidden, and one that stands out above 
 >>> visible
 array([ True, False])
 ```
+
+## Geostationary scan angles
+
+A geostationary imager's file holds scan angles $x$ (positive east) and $y$ (positive north) in radians. [`geostationary_lonlat`](xref:api#radiomax.geometry.geostationary_lonlat) turns them into positions, with the sub-satellite longitude and the satellite's height from the same file:
+
+```python
+>>> x = np.linspace(-0.08, 0.16, 4)
+>>> goes = {"lon_0": -75.2, "height": 35_786_023.0, "sweep": "x"}
+>>> lon, lat, visible = geometry.geostationary_lonlat(x, 0.08, **goes)
+>>> lon.round(3)
+array([-107.551,  -75.2  ,  -42.849,      nan])
+>>> lat.round(3)
+array([28.235, 27.489, 28.235,    nan])
+```
+
+The last angle misses the Earth, so it is NaN. `sweep` says which axis the instrument sweeps along, and it has no default, because the wrong one is off by kilometres and looks right: `"x"` for GOES ABI, `"y"` for Himawari AHI, MTG FCI and SEVIRI.
+
+[`geostationary_scan_angles`](xref:api#radiomax.geometry.geostationary_scan_angles) is the inverse, for finding the pixel that sees a place. It is NaN where the satellite is below the place's horizon:
+
+```python
+>>> x, y, visible = geometry.geostationary_scan_angles(np.asarray([12.5, -103.2]), np.asarray([41.9, 31.8]), **goes)
+>>> x.round(6), y.round(6)
+(array([      nan, -0.067782]), array([     nan, 0.089174]))
+```
