@@ -64,7 +64,7 @@ PACKAGE = _package_name()
 
 # Libraries the package builds on, as {distribution: [public modules]}, with a
 # one-paragraph blurb each, e.g. {"numpy": ["numpy"]}.
-# template-example: empty because the example package is dependency-free.
+# radiomax computes in the namespace of its inputs; none of them is indexed here.
 UPSTREAM: dict[str, list[str]] = {}
 UPSTREAM_BLURB: dict[str, str] = {}
 

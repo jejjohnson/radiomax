@@ -7,10 +7,7 @@
 #
 # Scopes below map file paths to the standard taxonomy:
 #   area:*   — which part of the project the change touches
-#   layer:*  — which implementation layer (if the project has a layer stack)
 #   type:*   — left to issue templates (NOT auto-applied on PRs)
-#
-# Adjust paths under layer:* to match your project's internal module layout.
 
 "area:engineering":
   - changed-files:
@@ -25,48 +22,54 @@
     - any-glob-to-any-file:
       - "docs/**"
       - "mkdocs.yml"
-      - "notebooks/**"
       - "*.md"
 
 "area:testing":
   - changed-files:
     - any-glob-to-any-file: "tests/**"
 
-# Catch-all for source changes that don't match a specific layer scope.
-# Ensures every `src/**` PR receives at least one area label.
-"area:code":
-  - changed-files:
-    - any-glob-to-any-file: "src/**"
-
-# --- Layer scopes — edit to match your project's layer stack --------------
-# The bundled demo package has a strict one-way dependency chain, and these
-# globs mirror it. Rename or delete them to match your own module layout.
-#
-#   layer:0-primitives  types, errors, validators — depend on nothing
-#   layer:1-components  the computational core — depends on primitives
-#   layer:2-models      user-facing composition — depends on the core
-
-"layer:0-primitives":
+# One area per public module; the private code lives in src/radiomax/_src/<module>/.
+"area:backend":
   - changed-files:
     - any-glob-to-any-file:
-      - "src/**/_typing.py"
-      - "src/**/exceptions.py"
-      - "src/**/utils.py"
-      - "src/**/_primitives/**"
+      - "src/radiomax/_src/backend.py"
+      - "src/radiomax/_src/labelled.py"
 
-"layer:1-components":
+"area:geometry":
   - changed-files:
     - any-glob-to-any-file:
-      - "src/**/stats.py"
-      - "src/**/smoothing.py"
-      - "src/**/_components/**"
+      - "src/radiomax/geometry.py"
+      - "src/radiomax/_src/geometry/**"
 
-"layer:2-models":
+"area:radiometry":
   - changed-files:
     - any-glob-to-any-file:
-      - "src/**/transforms.py"
-      - "src/**/cli.py"
-      - "src/**/_models/**"
+      - "src/radiomax/radiometry.py"
+      - "src/radiomax/_src/radiometry/**"
+
+"area:thermal":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "src/radiomax/thermal.py"
+      - "src/radiomax/_src/thermal/**"
+
+"area:retrievals":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "src/radiomax/retrievals.py"
+      - "src/radiomax/_src/retrievals/**"
+
+"area:sar":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "src/radiomax/sar.py"
+      - "src/radiomax/_src/sar/**"
+
+"area:altimetry":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "src/radiomax/altimetry.py"
+      - "src/radiomax/_src/altimetry/**"
 
 # --- Default / legacy labels retained for Dependabot compatibility ---------
 

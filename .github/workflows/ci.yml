@@ -3,8 +3,8 @@ name: Tests
 on:
   push:
     branches: [main]
+  # every pull request, whatever its base, so stacked PRs are tested too
   pull_request:
-    branches: [main]
 
 permissions:
   contents: read
@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: uv sync --group dev
+        run: uv sync --all-extras --all-groups
       - name: Run tests with coverage
         run: uv run pytest -v
       - name: Upload coverage report
@@ -36,3 +36,24 @@ jobs:
         with:
           files: ./coverage.xml
           fail_ci_if_error: false
+
+  test-without-jax:
+    name: without JAX and xarray
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.12"
+      # The base install: an environment of its own, so no test group brings
+      # JAX or xarray in through a reference library.
+      - name: Install the package and pytest, no extras
+        run: |
+          uv venv /tmp/base
+          uv pip install --python /tmp/base . pytest hypothesis array-api-strict
+      - name: Assert that JAX and xarray are not installed
+        run: >-
+          /tmp/base/bin/python -c
+          "import importlib.util as u, sys; sys.exit(any(map(u.find_spec, ('jax', 'xarray'))))"
+      - name: Run the tests without them
+        run: /tmp/base/bin/python -m pytest -o addopts= tests

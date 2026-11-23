@@ -1,7 +1,7 @@
 [project]
-name = "mypackage"
-version = "0.1.7"
-description = "My short description for my project."
+name = "radiomax"
+version = "0.0.1"
+description = "Observation geometry and radiometry on any array library."
 authors = [
     {name="J. Emmanuel Johnson", email="jemanjohnson34@gmail.com"},
 ]
@@ -19,13 +19,20 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Development Status :: 2 - Pre-Alpha",
 ]
-dependencies = []
+dependencies = [
+    "numpy>=2.0",
+    # constants, the ellipsoid and Earth-centred coordinates
+    "geophysix>=0.0.4",
+    # the namespace of an input array; pure Python, no dependencies of its own
+    "array-api-compat>=1.11",
+]
+
+[project.optional-dependencies]
+jax = ["jax>=0.4.30"]
+xarray = ["xarray>=2024.6"]
 
 [project.urls]
-Repository = "https://github.com/jejjohnson/mypackage"
-
-[project.scripts]
-mypackage = "mypackage.cli:main"
+Repository = "https://github.com/jejjohnson/radiomax"
 
 [dependency-groups]
 dev = [
@@ -35,6 +42,23 @@ dev = [
     "poethepoet>=0.49.0",
     "cyclopts>=5.3.3",
     "loguru>=0.7.3",
+]
+test = [
+    # Reference results only: oracles and property tests, never runtime imports.
+    "array-api-strict>=2.3",
+    "georeader-spaceml>=2.4.1",
+    "hypothesis>=6.100",
+    "pvlib>=0.11",
+    "pyproj>=3.6",
+    # georeader imports these two without declaring them
+    "tqdm>=4",
+    "typing-extensions>=4",
+]
+oracles-jax = [
+    # Reference results that need JAX: only the job with every extra installs them.
+    # Written as URLs, as integrix writes them, so that uv sees one functax.
+    "functax[jax] @ git+https://github.com/jejjohnson/functax@v0.0.11",
+    "integrix @ git+https://github.com/jejjohnson/integrix@v0.0.9",
 ]
 lint = [
     "ruff>=0.15.22",
@@ -65,12 +89,16 @@ docs = [
     "pygments>=2.21.0,<2.22",
 ]
 
+[tool.uv.sources]
+# geophysix is not on PyPI: it resolves from git, by tag.
+geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.4" }
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mypackage"]
+packages = ["src/radiomax"]
 
 [tool.ruff]
 target-version = "py312"
@@ -78,10 +106,12 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
-ignore = ["E402", "E721", "E731", "E741"]
+# RUF022 sorts __all__ isort-style (constants first); tests/test_public_api.py
+# keeps it in plain sorted() order instead.
+ignore = ["E402", "E721", "E731", "E741", "RUF022"]
 # Docstrings and comments carry Unicode maths (eman-style-math, "Maths
 # notation" in AGENTS.md), so the maths glyphs that look like ASCII are allowed.
-allowed-confusables = ["−", "×", "∗", "∣", "α", "γ", "ι", "ν", "ο", "ρ", "σ", "υ"]
+allowed-confusables = ["–", "−", "′", "×", "∗", "∣", "α", "γ", "ι", "ν", "ο", "ρ", "σ", "υ"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
@@ -100,10 +130,10 @@ docstring-code-line-length = 72
 python-version = "3.12"
 
 [tool.pytest.ini_options]
-# `src/mypackage` is a testpath so that --doctest-modules collects the
+# `src/radiomax` is a testpath so that --doctest-modules collects the
 # ``Examples:`` blocks in every Google-style docstring. They are executable
 # documentation: if an example in the docs goes stale, CI fails.
-testpaths = ["tests", "src/mypackage"]
+testpaths = ["tests", "src/radiomax"]
 # Test tiers (see "Test tiers" in AGENTS.md). CI runs every tier.
 strict_markers = true
 markers = [
@@ -112,13 +142,13 @@ markers = [
 ]
 addopts = """\
     --doctest-modules \
-    --cov=src/mypackage \
+    --cov=src/radiomax \
     --cov-report=term-missing \
     --cov-report=xml:coverage.xml\
 """
 
 [tool.coverage.run]
-source = ["src/mypackage"]
+source = ["src/radiomax"]
 omit = ["tests/*"]
 
 [tool.coverage.report]
@@ -135,7 +165,7 @@ exclude_also = [
 #   uv run poe            # list every task with its help text
 #   uv run poe install    # first run: `uv run` syncs the dev group, so poe exists
 # Extra arguments are passed through to the underlying command, e.g.
-#   uv run poe test tests/test_stats.py -k summarize
+#   uv run poe test tests/test_exceptions.py -k base
 # ---------------------------------------------------------------------------
 [tool.poe]
 # Tasks call `uv run --group …` themselves, exactly as CI does, so poe must not
@@ -146,7 +176,7 @@ envfile = { optional = ".env" }
 
 [tool.poe.env]
 # Overridable from .env or the shell.
-PKGROOT.default = "src/mypackage"
+PKGROOT.default = "src/radiomax"
 TYPECHECK_EXTRA.default = "scripts"
 
 # --- Meta -------------------------------------------------------------------

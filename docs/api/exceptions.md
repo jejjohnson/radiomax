@@ -1,17 +1,11 @@
 # Exceptions
 
-Every error raised by the package derives from
-[`MypackageError`][mypackage.MypackageError] *and* from the closest
-standard-library exception.
+Every error raised by the package derives from [`RadiomaxError`][radiomax.RadiomaxError], which is itself a `ValueError`.
 
 ```mermaid
 graph TD
-    E[Exception] --> M[MypackageError]
-    V[ValueError] --> VE[ValidationError]
-    M --> VE
-    VE --> ES[EmptySeriesError]
-    R[RuntimeError] --> NF[NotFittedError]
-    M --> NF
+    V[ValueError] --> R[RadiomaxError]
+    R --> A[ValidationError]
 ```
 
-::: mypackage.exceptions
+::: radiomax.exceptions
