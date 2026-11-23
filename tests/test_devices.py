@@ -61,6 +61,9 @@ CALLS: dict[str, Callable[[Make], Any]] = {
     "geostationary_lonlat": lambda m: geometry.geostationary_lonlat(
         m([0.01, 0.05]), 0.02, **GOES
     ),
+    "geostationary_on_earth": lambda m: geometry.geostationary_on_earth(
+        m([0.01, 0.16]), 0.02, height=35_786_023.0, sweep="x"
+    ),
     "geostationary_scan_angles": lambda m: geometry.geostationary_scan_angles(
         m([10.0, 30.0]), 20.0, **GOES
     ),
@@ -228,8 +231,8 @@ def test_torch_keeps_the_graph(name: str) -> None:
     outputs = [o for o in _outputs(CALLS[name](make)) if o.is_floating_point()]
     (leaf,) = leaves
     assert leaf.requires_grad
-    if name == "box_response":
-        # a step: no gradient reaches the wavelength
+    if name in {"box_response", "geostationary_on_earth"}:
+        # a step and a mask: no gradient reaches the input
         return
     sum(output.sum() for output in outputs if output.requires_grad).backward()
     assert leaf.grad is not None

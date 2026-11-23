@@ -4,14 +4,18 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from _backends import SECOND_DEVICE, assert_backends_agree, needs_jax
+from _backends import KINDS, SECOND_DEVICE, assert_backends_agree, needs_jax
 from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from _oracles import proj_geostationary
 from geophysix.earth import WGS84
 from hypothesis import given, strategies as st
 
 from radiomax.exceptions import ValidationError
-from radiomax.geometry import geostationary_lonlat, geostationary_scan_angles
+from radiomax.geometry import (
+    geostationary_lonlat,
+    geostationary_on_earth,
+    geostationary_scan_angles,
+)
 
 
 HEIGHT = 35_786_023.0
@@ -65,6 +69,28 @@ class TestGeostationary:
         assert_matches_oracle(visible, _on_earth(x, y, sweep), rtol=0.0)
         assert_matches_oracle(np.isnan(lon), ~visible, rtol=0.0)
         assert_matches_oracle(np.isnan(lat), ~visible, rtol=0.0)
+
+    def test_the_mask_alone(self, sweep: str) -> None:
+        x, y = _grid(0.16, 161)
+        options = {"height": HEIGHT, "sweep": sweep}
+        mask = geostationary_on_earth(x, y, **options)
+        assert_matches_oracle(mask, _on_earth(x, y, sweep), rtol=0.0)
+        _, _, visible = geostationary_lonlat(x, y, lon_0=0.0, **options)
+        assert_matches_oracle(mask, visible, rtol=0.0)
+        # away from the limb float32 gives the same mask
+        inner = np.abs(np.hypot(x, y) - 0.1515) > 1e-3
+        single = geostationary_on_earth(
+            x.astype(np.float32), y.astype(np.float32), **options
+        )
+        assert_matches_oracle(single, mask, rtol=0.0, where=inner)
+
+    @pytest.mark.parametrize("kind", KINDS, ids=lambda kind: kind.name)
+    def test_the_mask_on_each_array_kind(self, sweep: str, kind) -> None:
+        x, y = np.linspace(-0.16, 0.16, 6).reshape(2, 3), np.full((2, 3), 0.02)
+        mask = geostationary_on_earth(
+            kind.make(x), kind.make(y), height=HEIGHT, sweep=sweep
+        )
+        assert_matches_oracle(kind.read(mask), _on_earth(x, y, sweep), rtol=0.0)
 
     def test_round_trip(self, sweep: str) -> None:
         x, y = _grid(INSIDE)
@@ -213,6 +239,8 @@ def test_the_sweep_axes_differ_by_kilometres() -> None:
 
 
 def test_an_unknown_sweep_is_refused() -> None:
+    with pytest.raises(ValidationError, match="'sweep' must be 'x' or 'y'"):
+        geostationary_on_earth(0.0, 0.0, height=HEIGHT, sweep="z")  # ty: ignore
     for function in (geostationary_lonlat, geostationary_scan_angles):
         with pytest.raises(ValidationError, match="'sweep' must be 'x' or 'y'"):
             function(0.0, 0.0, lon_0=0.0, height=HEIGHT, sweep="z")  # ty: ignore
