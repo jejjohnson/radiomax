@@ -197,3 +197,5 @@ def test_variadic_arguments_align_by_name_too(xr) -> None:
     np.testing.assert_array_equal(got, 2.0 * (3.0 + (a + b)))
     with pytest.raises(ValidationError, match="'others' has dimensions"):
         total(a, 1.0, np.ones(2))
+    with pytest.raises(ValidationError, match="'scale' has dimensions"):
+        total(a, scale=np.ones(2))
