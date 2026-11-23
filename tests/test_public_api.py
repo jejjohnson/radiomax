@@ -18,6 +18,7 @@ import radiomax
 
 SUBMODULES = [
     "_typing",
+    "altimetry",
     "exceptions",
     "geometry",
     "radiometry",

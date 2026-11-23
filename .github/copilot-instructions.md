@@ -4,7 +4,7 @@ Read [`AGENTS.md`](../AGENTS.md) at the repository root first: it is the single 
 
 The essentials, in case you only read this file:
 
-- One package, `src/radiomax/`: the GeoStack's library of observation geometry and radiometry. It imports geophysix and nothing else from the GeoStack at runtime (never gridax, integrix, functax, pipekit, geotoolz, georeader or a model). Planned public modules: `geometry`, `radiometry`, `thermal`, `retrievals`, `sar`, `altimetry`; private code in `_src/<module>/`. Search [`docs/api/capabilities.md`](../docs/api/capabilities.md) before writing a helper.
+- One package, `src/radiomax/`: the GeoStack's library of observation geometry and radiometry. It imports geophysix and nothing else from the GeoStack at runtime (never gridax, integrix, functax, pipekit, geotoolz, georeader or a model). Public modules: `geometry`, `radiometry`, `thermal`, `retrievals`, `sar`, `altimetry`; private code in `_src/<module>/`. Search [`docs/api/capabilities.md`](../docs/api/capabilities.md) before writing a helper.
 - Ownership test: geometry, a unit conversion, or an empirical formula with given coefficients, per pixel, belongs here; a model of radiation in an atmosphere is radtrax's.
 - Keep the contracts in `AGENTS.md`:
   - **array rules**: one implementation in array API functions; the result is the same kind of array as the input, a DataArray keeps its labels, JAX and xarray are never imported at module level, constants enter in the input's dtype;

@@ -181,3 +181,19 @@ def test_the_decorator_keeps_the_signature_and_docstring() -> None:
 def test_a_missing_argument_is_reported_as_python_does() -> None:
     with pytest.raises(TypeError, match="slope"):
         affine(1.0)
+
+
+def test_variadic_arguments_align_by_name_too(xr) -> None:
+    @elementwise()
+    def total(first, *others, scale=1.0):
+        for other in others:
+            first = first + other
+        return scale * first
+
+    a = xr.DataArray([1.0, 2.0], dims="x")
+    b = xr.DataArray([10.0, 20.0, 30.0], dims="y")
+    got = total(1.0, 2.0, a, b, scale=2.0)
+    assert got.dims == ("x", "y")
+    np.testing.assert_array_equal(got, 2.0 * (3.0 + (a + b)))
+    with pytest.raises(ValidationError, match="'others' has dimensions"):
+        total(a, 1.0, np.ones(2))

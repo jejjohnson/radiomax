@@ -29,7 +29,7 @@ uv run poe install
 
 ## Status
 
-The public modules [`geometry`](xref:api#radiomax.geometry), [`radiometry`](xref:api#radiomax.radiometry), [`thermal`](xref:api#radiomax.thermal), [`retrievals`](xref:api#radiomax.retrievals) and [`sar`](xref:api#radiomax.sar) are built. `altimetry` is planned.
+The public modules [`geometry`](xref:api#radiomax.geometry), [`radiometry`](xref:api#radiomax.radiometry), [`thermal`](xref:api#radiomax.thermal), [`retrievals`](xref:api#radiomax.retrievals), [`sar`](xref:api#radiomax.sar) and [`altimetry`](xref:api#radiomax.altimetry) are built.
 
 ## Design rules
 

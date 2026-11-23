@@ -77,6 +77,7 @@ nav:
   - Thermal: thermal.md
   - Retrievals: retrievals.md
   - SAR: sar.md
+  - Altimetry: altimetry.md
   - Type aliases: typing.md
   - Exceptions: exceptions.md
 

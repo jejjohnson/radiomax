@@ -76,10 +76,12 @@ def elementwise[**P, R](
         @functools.wraps(function)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             bound = signature.bind(*args, **kwargs)
-            labelled = [k for k, v in bound.arguments.items() if is_dataarray(v)]
+            # positions and keywords, with a variadic argument spread out
+            values = {**dict(enumerate(bound.args)), **bound.kwargs}
+            labelled = [k for k, v in values.items() if is_dataarray(v)]
             if not labelled:
                 return function(*args, **kwargs)
-            return _apply(function, bound, labelled, n_outputs)
+            return _apply(function, signature, values, labelled, n_outputs)
 
         return wrapper
 
@@ -152,23 +154,27 @@ def apply_along(
 
 def _apply(
     function: Callable[..., Any],
-    bound: inspect.BoundArguments,
-    labelled: list[str],
+    signature: inspect.Signature,
+    values: dict[int | str, Any],
+    labelled: list[int | str],
     n_outputs: int,
 ) -> Any:
     """Call ``function`` through ``xarray.apply_ufunc`` on its labelled arguments."""
     xarray = sys.modules["xarray"]
-    for name, value in bound.arguments.items():
-        if name not in labelled and _has_dimensions(value):
+    for key, value in values.items():
+        if key not in labelled and _has_dimensions(value):
             msg = (
-                f"'{name}' has dimensions but no names, and cannot be aligned with "
-                f"the DataArray '{labelled[0]}'; make it a DataArray too"
+                f"'{_name(key, signature)}' has dimensions but no names, and cannot "
+                f"be aligned with the DataArray '{_name(labelled[0], signature)}'; "
+                "make it a DataArray too"
             )
             raise ValidationError(msg)
 
     def on_data(*data: Any) -> Any:
-        bound.arguments.update(zip(labelled, data, strict=True))
-        result = function(*bound.args, **bound.kwargs)
+        given = values | dict(zip(labelled, data, strict=True))
+        args = [value for key, value in given.items() if isinstance(key, int)]
+        kwargs = {key: value for key, value in given.items() if isinstance(key, str)}
+        result = function(*args, **kwargs)
         # xarray needs every output in the inputs' common shape, and one that
         # does not depend on an input lacks that input's dimensions
         shape = np.broadcast_shapes(*(array.shape for array in data))
@@ -180,7 +186,7 @@ def _apply(
 
     result = xarray.apply_ufunc(
         on_data,
-        *(bound.arguments[name] for name in labelled),
+        *(values[key] for key in labelled),
         output_core_dims=[()] * n_outputs,
         dask="allowed",
         keep_attrs=False,
@@ -188,6 +194,18 @@ def _apply(
     if n_outputs == 1:
         return result.rename(None)
     return tuple(array.rename(None) for array in result)
+
+
+def _name(key: int | str, signature: inspect.Signature) -> str:
+    """The parameter at a position, or of a keyword."""
+    if isinstance(key, str):
+        return key
+    parameters = list(signature.parameters.values())
+    for parameter in parameters[:key]:
+        # it takes every position from its own on
+        if parameter.kind is inspect.Parameter.VAR_POSITIONAL:
+            return parameter.name
+    return parameters[key].name
 
 
 def _has_dimensions(value: Any) -> bool:
