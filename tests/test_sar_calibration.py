@@ -41,7 +41,7 @@ class TestDigitalNumbers:
         sigma_table = np.asarray([332.0240, 331.9609, 319.9946, 319.8001])
         gamma_table = np.asarray([307.9890, 307.9099, 292.6021, 292.3477])
         angle = np.rad2deg(np.arccos(gamma_table**2 / sigma_table**2))
-        assert (29.0 < angle).all()
+        assert (angle > 29.0).all()
         assert (angle < 46.0).all()
         dn = np.asarray([10.0, 200.0, 3000.0, 65535.0])
         gamma0 = sigma0_to_gamma0(dn_to_backscatter(dn, sigma_table), angle)
