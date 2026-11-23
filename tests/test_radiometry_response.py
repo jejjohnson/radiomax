@@ -320,7 +320,8 @@ class TestSampledMatrix:
             wavelength, stored["response_centre_nm"], stored["response_fwhm_nm"]
         )
         matrix = sampled_response_matrix(responses, wavelength)
-        assert_matches_oracle(matrix, stored["response_matrix"], rtol=1e-11)
+        # measured 5.7e-14, in the far tails, where exp(−z²/2) amplifies rounding
+        assert_matches_oracle(matrix, stored["response_matrix"], rtol=1e-13)
 
     def test_the_band_average_is_the_matrix(self) -> None:
         f = _lines(3, 2000.0, 2500.0)(TABLE)
