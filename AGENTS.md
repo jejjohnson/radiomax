@@ -114,12 +114,13 @@ Most rules here are tests, so CI tells you when one breaks. Read a test's docstr
 | `tests/test_exceptions.py` | The hierarchy: every error is a `RadiomaxError`, which is a `ValueError` |
 | `tests/test_build_docs.py` | The two-tool docs pipeline: inventory parsing, anchor repair, link checking, the inventory port and the absolute nav URL in `docs/myst.yml`, the files copied to the site root (`ROOT_FILES`) |
 | `tests/conftest.py` | `jax_enable_x64` is on whenever JAX is importable |
+| `tests/test_harness.py` | The harness itself: each check in `tests/_harness.py` and `tests/_backends.py` passes on a right function and fails on a wrong one, each reference in `tests/_oracles.py` agrees with a closed form, and the stored radtrax values are what their names say |
 | CI job "without JAX and xarray" | The base install imports and passes the tests with neither installed |
 | `[tool.coverage.report] fail_under = 90` | Coverage of `src/radiomax` in every coverage-enabled run (CI, `uv run poe test-cov`) |
 | `strict_markers = true` | Only the registered tier markers (`slow`, `integration`) exist |
 | ruff (`select = E, F, I, UP, B, SIM, RUF`), ty | Lint (the whole repo), format, types on `src/radiomax` and `scripts` |
 
-Each function adds its own four tests as `add-sensor-function` lays out: an oracle, a property, a gradient check and a backend-parity test.
+Each function adds its own four tests as `add-sensor-function` lays out: an oracle (`tests/_oracles.py`, `assert_matches_oracle`), a property, a gradient check (`assert_grad_matches_fd`) and a backend-parity test (`assert_backends_agree`, `assert_traces`). radtrax imports radiomax, so its values are stored in `tests/data/`, with the commit in the file name, by `make_radtrax_values.py`; add an array there rather than a test dependency.
 
 ## Recipes
 
