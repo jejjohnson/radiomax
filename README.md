@@ -24,7 +24,7 @@ Nothing in radiomax models radiation moving through an atmosphere; that is [radt
 radiomax is not on PyPI yet. It builds on [geophysix](https://github.com/jejjohnson/geophysix), which is not either, so install both from GitHub:
 
 ```bash
-uv pip install "geophysix @ git+https://github.com/jejjohnson/geophysix@v0.0.5" "radiomax @ git+https://github.com/jejjohnson/radiomax"
+uv pip install "geophysix @ git+https://github.com/jejjohnson/geophysix@v0.0.7" "radiomax @ git+https://github.com/jejjohnson/radiomax"
 ```
 
 ## Status
