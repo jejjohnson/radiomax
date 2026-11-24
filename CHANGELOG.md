@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.9](https://github.com/jejjohnson/radiomax/compare/v0.0.8...v0.0.9) (2026-11-24)
+
+
+### Bug Fixes
+
+* **deps:** pipekit-array 0.1.4 and geophysix 0.0.7, the tags of the stack ([#77](https://github.com/jejjohnson/radiomax/issues/77)) ([f26843c](https://github.com/jejjohnson/radiomax/commit/f26843cf1c2806816fb6abbf749cdcd02112bc03))
+* **xarray:** a DataArray's coordinates keep their attributes ([1baa444](https://github.com/jejjohnson/radiomax/commit/1baa444b2ac104e66ff5c5249b305efb7df13004)), closes [#64](https://github.com/jejjohnson/radiomax/issues/64)
+
 ## [0.0.8](https://github.com/jejjohnson/radiomax/compare/v0.0.7...v0.0.8) (2026-11-23)
 
 
