@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.11](https://github.com/jejjohnson/radiomax/compare/v0.0.10...v0.0.11) (2026-11-25)
+
+
+### Bug Fixes
+
+* a missing angle stays missing, on pipekit-array's safe roots and test checks ([#82](https://github.com/jejjohnson/radiomax/issues/82)) ([9455dad](https://github.com/jejjohnson/radiomax/commit/9455dad221709d22e8082d8a9ad5e2d9ae9a7fd1))
+
 ## [0.0.10](https://github.com/jejjohnson/radiomax/compare/v0.0.9...v0.0.10) (2026-11-25)
 
 
