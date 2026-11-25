@@ -92,10 +92,10 @@ docs = [
 
 [tool.uv.sources]
 # geophysix is not on PyPI: it resolves from git, by tag.
-geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.7" }
+geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.8" }
 # pipekit neither (jejjohnson/pipekit#247). Every package of the stack pins its
 # packages to one tag: uv refuses two refs of one repository.
-pipekit-array = { git = "https://github.com/jejjohnson/pipekit", subdirectory = "packages/pipekit-array", tag = "pipekit-array-v0.1.4" }
+pipekit-array = { git = "https://github.com/jejjohnson/pipekit", subdirectory = "packages/pipekit-array", tag = "pipekit-array-v0.1.6" }
 
 [build-system]
 requires = ["hatchling"]
