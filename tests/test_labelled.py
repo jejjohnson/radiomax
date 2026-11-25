@@ -7,7 +7,8 @@ from typing import Any
 
 import numpy as np
 import pytest
-from pipekit_array.functions import elementwise, floating_inputs, is_dataarray
+from pipekit_array.arrays import floating_inputs, is_dataarray
+from pipekit_array.kernels import elementwise
 
 from radiomax import BackendError
 

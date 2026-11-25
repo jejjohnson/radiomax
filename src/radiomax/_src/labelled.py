@@ -1,6 +1,6 @@
 """Functions that consume a named dimension, on DataArrays.
 
-Elementwise functions go through ``pipekit_array.functions.elementwise``.
+Elementwise functions go through ``pipekit_array.kernels.elementwise``.
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ import sys
 from collections.abc import Callable, Mapping
 from typing import Any
 
-from pipekit_array.functions import is_dataarray
+from pipekit_array.arrays import is_dataarray
 
 from radiomax.exceptions import ValidationError
 

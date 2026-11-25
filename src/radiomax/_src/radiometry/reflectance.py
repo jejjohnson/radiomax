@@ -6,7 +6,8 @@ import math
 from types import ModuleType
 from typing import Any
 
-from pipekit_array.functions import elementwise, floating_inputs, like
+from pipekit_array.arrays import floating_inputs, like
+from pipekit_array.kernels import elementwise
 
 from radiomax._src.numerics import to_radians
 

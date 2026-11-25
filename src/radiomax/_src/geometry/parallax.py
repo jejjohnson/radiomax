@@ -6,7 +6,8 @@ import math
 from typing import Any
 
 from geophysix.earth import WGS84, Ellipsoid, ecef_to_geodetic, geodetic_to_ecef
-from pipekit_array.functions import elementwise, floating_inputs, like
+from pipekit_array.arrays import floating_inputs, like
+from pipekit_array.kernels import elementwise
 
 from radiomax._src.geometry.intersection import near_root
 from radiomax._src.numerics import to_radians
