@@ -8,10 +8,14 @@ import math
 import numpy as np
 import pytest
 from _backends import assert_backends_agree, needs_jax
-from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from _oracles import radtrax_values
 from geophysix.constants import STANDARD
 from hypothesis import given, strategies as st
+from pipekit_array.testing import (
+    assert_grad_matches_fd,
+    assert_matches_oracle,
+    assert_traces,
+)
 
 from radiomax.thermal import (
     from_per_ghz,

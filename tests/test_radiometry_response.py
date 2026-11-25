@@ -9,14 +9,14 @@ from typing import Any
 import numpy as np
 import pytest
 from _backends import needs_jax
-from _harness import (
+from _oracles import radtrax_values
+from hypothesis import assume, given, settings, strategies as st
+from pipekit_array.testing import (
     assert_adjoint,
     assert_grad_matches_fd,
     assert_matches_oracle,
     assert_traces,
 )
-from _oracles import radtrax_values
-from hypothesis import assume, given, settings, strategies as st
 
 from radiomax import ValidationError
 from radiomax.radiometry import (

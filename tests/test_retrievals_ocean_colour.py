@@ -7,8 +7,12 @@ import math
 import numpy as np
 import pytest
 from _backends import KINDS, assert_backends_agree, needs_jax
-from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from hypothesis import given, strategies as st
+from pipekit_array.testing import (
+    assert_grad_matches_fd,
+    assert_matches_oracle,
+    assert_traces,
+)
 
 from radiomax.exceptions import ValidationError
 from radiomax.retrievals import OCX_R2022, BandRatioTable, band_ratio_chlorophyll

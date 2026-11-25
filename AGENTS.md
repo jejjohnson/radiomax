@@ -68,7 +68,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | Scan angles to longitude and latitude, an off-Earth mask of a geostationary disk | `radiomax.geometry.geostationary_lonlat`, `geostationary_scan_angles`, `geostationary_on_earth` |
 | A whiskbroom's scan angles, pixel growth or bowtie | `radiomax.geometry.scan_angles`, `scan_pixel_growth`, `bowtie_detector_positions` |
 | The quadratic of a line of sight and the Earth, a parallax shift | `radiomax.geometry.earth_intersection`, `apparent_position`; `near_root` from `radiomax._src.geometry.intersection` inside the package |
-| `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`, `safe_sqrt`, `safe_atan2` |
+| `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`; `pipekit_array.functions.safe_sqrt`, `safe_atan2` |
 | `gain * dn + offset`, `pi * L * d**2 / (E0 * cos(sza))` or its inverse | `radiomax.radiometry.counts_to_radiance`, `radiance_to_counts`, `counts_to_reflectance`, `reflectance`, `radiance_from_reflectance` |
 | A trapezoid sum over a spectral response, a band irradiance, `E * wl**2 / 1e7` | `radiomax.radiometry.band_average`, `band_irradiance`, `trapezoid_weights`, `per_nm_to_per_cm`, `per_cm_to_per_nm` |
 | A response on another grid than its table, an interpolated response times a spectrum | `radiomax.radiometry.response_matrix` (exact, host), `apply_response`, `apply_response_adjoint`, `response_coverage` |
@@ -82,7 +82,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | `(dn / lut) ** 2`, `beta0 * sin(incidence)`, `sigma0 / cos(incidence)` | `radiomax.sar.dn_to_backscatter`, `beta0_to_sigma0`, `sigma0_to_gamma0` and their inverses |
 | An altimeter's dry, wet or ionospheric correction, an inverse barometer, `altitude - (range + corrections)` | `radiomax.altimetry.dry_troposphere_correction`, `wet_troposphere_correction`, `ionosphere_correction`, `dual_frequency_ionosphere_correction`, `inverse_barometer`, `sea_surface_height` |
 | A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
-| A frozen record that must be a JAX pytree | `@register_record` from `radiomax._src.records` |
+| A frozen record that must be a JAX pytree | `@register_record` from `pipekit_array.records` |
 | `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `namespace_of`, `floating_inputs` from `pipekit_array.functions` |
 | A constant as an array of the input's dtype, on its device | `pipekit_array.functions.like` |
 | `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` and `is_dataarray` from `pipekit_array.functions`; `radiomax._src.labelled.apply_along` for a function that consumes a named dimension |
@@ -132,7 +132,7 @@ Most rules here are tests, so CI tells you when one breaks. Read a test's docstr
 | `tests/test_exceptions.py` | The hierarchy: every error is a `RadiomaxError`, which is a `ValueError`; `BackendError` is pipekit's |
 | `tests/test_build_docs.py` | The two-tool docs pipeline: inventory parsing, anchor repair, link checking, the inventory port and the absolute nav URL in `docs/myst.yml`, the files copied to the site root (`ROOT_FILES`) |
 | `tests/conftest.py` | `jax_enable_x64` is on whenever JAX is importable |
-| `tests/test_harness.py` | The harness itself: each check in `tests/_harness.py` and `tests/_backends.py` passes on a right function and fails on a wrong one, each reference in `tests/_oracles.py` agrees with a closed form, and the stored radtrax values are what their names say |
+| `tests/test_harness.py` | The checks of `pipekit_array.testing` pass on a toy function, each reference in `tests/_oracles.py` agrees with a closed form, and the stored radtrax values are what their names say |
 | `tests/test_devices.py` | Every public function returns on its input's device, never rebuilds an array of the library, and keeps torch's gradients; a new function joins `CALLS` |
 | CI job "with torch 2.10" | The suite on torch, in a version whose `asarray` detaches |
 | CI job "without JAX and xarray" | The base install imports and passes the tests with neither installed |

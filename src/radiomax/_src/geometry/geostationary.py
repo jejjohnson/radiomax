@@ -7,10 +7,10 @@ from types import ModuleType
 from typing import Any, Literal
 
 from geophysix.earth import WGS84, Ellipsoid, ecef_to_geodetic, geodetic_to_ecef
-from pipekit_array.functions import elementwise, floating_inputs, like
+from pipekit_array.functions import elementwise, floating_inputs, like, safe_sqrt
 
 from radiomax._src.geometry.intersection import near_root
-from radiomax._src.numerics import safe_sqrt, to_radians, wrap_turn
+from radiomax._src.numerics import to_radians, wrap_turn
 from radiomax.exceptions import ValidationError
 
 

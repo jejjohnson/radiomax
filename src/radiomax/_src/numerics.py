@@ -1,4 +1,4 @@
-"""Small numerics every module shares: angle units, and roots with finite gradients."""
+"""Angle units, which every module shares."""
 
 from __future__ import annotations
 
@@ -11,8 +11,6 @@ from pipekit_array.functions import like
 
 __all__ = [
     "full_turn",
-    "safe_atan2",
-    "safe_sqrt",
     "to_radians",
     "wrap_turn",
 ]
@@ -40,7 +38,7 @@ def wrap_turn(angle: Any, xp: ModuleType, *, degrees: bool) -> Any:
     """An angle modulo a full turn, in [0°, 360°) or [0, 2π).
 
     Rounding can take a tiny negative angle to the full turn itself, which is
-    sent to 0.
+    sent to 0. NaN stays NaN.
 
     Examples:
         >>> import numpy as np
@@ -49,35 +47,5 @@ def wrap_turn(angle: Any, xp: ModuleType, *, degrees: bool) -> Any:
     """
     turn = full_turn(degrees=degrees)
     wrapped = xp.remainder(angle, like(turn, angle, xp))
-    return xp.where(wrapped < turn, wrapped, xp.zeros_like(wrapped))
-
-
-def safe_sqrt(value: Any, xp: ModuleType) -> Any:
-    """√x for x > 0, and 0 with a zero gradient at x ≤ 0.
-
-    Examples:
-        >>> import numpy as np
-        >>> safe_sqrt(np.asarray([4.0, 0.0, -1.0]), np).tolist()
-        [2.0, 0.0, 0.0]
-    """
-    positive = value > 0
-    # the inner where keeps the unused branch finite, and so its gradient
-    safe = xp.where(positive, value, xp.ones_like(value))
-    return xp.where(positive, xp.sqrt(safe), xp.zeros_like(value))
-
-
-def safe_atan2(y: Any, x: Any, xp: ModuleType) -> Any:
-    """atan2(y, x), and 0 with a zero gradient at the origin.
-
-    Examples:
-        >>> import numpy as np
-        >>> zero = np.asarray(0.0)
-        >>> float(safe_atan2(zero, zero, np))
-        0.0
-        >>> round(float(safe_atan2(np.asarray(1.0), zero, np)), 12)
-        1.570796326795
-    """
-    away = (x != 0) | (y != 0)
-    safe_x = xp.where(away, x, xp.ones_like(x))
-    safe_y = xp.where(away, y, xp.zeros_like(y))
-    return xp.atan2(safe_y, safe_x)
+    # not `wrapped < turn`, which is False for NaN and would send it to 0
+    return xp.where(wrapped >= turn, xp.zeros_like(wrapped), wrapped)

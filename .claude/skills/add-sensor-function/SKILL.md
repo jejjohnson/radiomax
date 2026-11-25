@@ -40,8 +40,8 @@ In `tests/test_<module>.py`, one class per function:
 
 - **Oracle.** Against pvlib, georeader, pyproj, integrix, functax or a stored radtrax value, through the helpers in `tests/_oracles.py` and `assert_matches_oracle`, with the tolerance and its source in a comment; each helper skips when its package is missing.
 - **Property.** A `hypothesis` property (symmetry, monotonicity, a round trip, a limit).
-- **Gradient.** `assert_grad_matches_fd` in `tests/_harness.py`, at the edges too; it skips without JAX.
-- **Backends.** `assert_backends_agree` in `tests/_backends.py` (NumPy, `array_api_strict`, JAX eager and under `jit`, DataArray; float64 and float32) and `assert_traces` (`jit` and `vmap` against a loop). A linear map also has `assert_adjoint`.
+- **Gradient.** `assert_grad_matches_fd` of `pipekit_array.testing`, at the edges too; it skips without JAX.
+- **Backends.** `assert_backends_agree` in `tests/_backends.py` (NumPy, `array_api_strict`, JAX eager and under `jit`, dask, DataArray; float64 and float32) and `assert_traces` (`jit` and `vmap` against a loop). A linear map also has `assert_adjoint`.
 - The edges (overhead, nadir, terminator, limb, zero radiance) and each invalid argument (`match=`).
 
 ## 6. Verify
