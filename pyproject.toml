@@ -24,7 +24,7 @@ dependencies = [
     # constants, the ellipsoid and Earth-centred coordinates
     "geophysix>=0.0.7",
     # the array backend, pipekit_array.functions; compat is array-api-compat
-    "pipekit-array[numpy,compat]>=0.1.4",
+    "pipekit-array[numpy,compat]>=0.1.6",
 ]
 
 [project.optional-dependencies]

@@ -1,4 +1,4 @@
-"""Angle units, and roots with finite gradients."""
+"""Angle units."""
 
 from __future__ import annotations
 
@@ -8,13 +8,7 @@ import numpy as np
 import pytest
 from hypothesis import given, strategies as st
 
-from radiomax._src.numerics import (
-    full_turn,
-    safe_atan2,
-    safe_sqrt,
-    to_radians,
-    wrap_turn,
-)
+from radiomax._src.numerics import full_turn, to_radians, wrap_turn
 
 
 def test_to_radians_by_the_argument_and_never_by_size() -> None:
@@ -47,11 +41,6 @@ def test_a_tiny_negative_angle_wraps_to_zero() -> None:
     assert wrap_turn(tiny, np, degrees=True).tolist() == [0.0, 0.0]
 
 
-def test_gradients_are_finite_at_the_origin() -> None:
-    jax = pytest.importorskip("jax")
-    jnp = jax.numpy
-    assert float(jax.grad(lambda x: safe_sqrt(x, jnp))(0.0)) == 0.0
-    assert float(jax.grad(lambda x: safe_sqrt(x, jnp))(4.0)) == 0.25
-    at_origin = jax.grad(lambda y, x: safe_atan2(y, x, jnp), argnums=(0, 1))
-    assert [float(g) for g in at_origin(0.0, 0.0)] == [0.0, 0.0]
-    assert [float(g) for g in at_origin(0.0, 2.0)] == [0.5, 0.0]
+def test_a_missing_angle_stays_missing() -> None:
+    angles = np.asarray([np.nan, 370.0])
+    np.testing.assert_allclose(wrap_turn(angles, np, degrees=True), [np.nan, 10.0])

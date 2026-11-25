@@ -6,10 +6,10 @@ import math
 from types import ModuleType
 from typing import Any
 
-from pipekit_array.functions import elementwise, floating_inputs, like
+from pipekit_array.functions import elementwise, floating_inputs, like, safe_sqrt
 
 from radiomax._src.geometry.angles import phase_radians
-from radiomax._src.numerics import full_turn, safe_sqrt, to_radians
+from radiomax._src.numerics import full_turn, to_radians
 
 
 __all__ = [

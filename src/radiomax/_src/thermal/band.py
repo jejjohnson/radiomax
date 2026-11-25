@@ -7,8 +7,7 @@ from typing import Any
 
 from geophysix.constants import STANDARD, Constants
 from pipekit_array.functions import elementwise, floating_inputs, like
-
-from radiomax._src.records import register_record
+from pipekit_array.records import register_record
 
 
 __all__ = [

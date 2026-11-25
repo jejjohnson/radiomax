@@ -7,9 +7,15 @@ from typing import Any
 
 import numpy as np
 from geophysix.earth import SPHERE
-from pipekit_array.functions import elementwise, floating_inputs, is_dataarray, like
+from pipekit_array.functions import (
+    elementwise,
+    floating_inputs,
+    is_dataarray,
+    like,
+    safe_sqrt,
+)
 
-from radiomax._src.numerics import safe_sqrt, to_radians
+from radiomax._src.numerics import to_radians
 from radiomax.exceptions import ValidationError
 
 

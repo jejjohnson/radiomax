@@ -7,7 +7,6 @@ from typing import Any
 import numpy as np
 import pytest
 from _backends import assert_backends_agree, needs_jax
-from _harness import assert_grad_matches_fd, assert_matches_oracle, assert_traces
 from _oracles import (
     functax_trapezoid_weights,
     georeader_band_irradiance,
@@ -15,6 +14,11 @@ from _oracles import (
 )
 from hypothesis import given, strategies as st
 from hypothesis.extra.numpy import arrays
+from pipekit_array.testing import (
+    assert_grad_matches_fd,
+    assert_matches_oracle,
+    assert_traces,
+)
 
 from radiomax import ValidationError
 from radiomax.radiometry import (
