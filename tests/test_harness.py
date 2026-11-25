@@ -27,7 +27,8 @@ from _oracles import (
 from geophysix.constants import STANDARD
 from geophysix.earth import geodetic_to_ecef
 from hypothesis import given, strategies as st
-from pipekit_array.functions import elementwise, floating_inputs, like
+from pipekit_array.arrays import floating_inputs, like
+from pipekit_array.kernels import elementwise
 from pipekit_array.testing import (
     assert_grad_matches_fd,
     assert_matches_oracle,

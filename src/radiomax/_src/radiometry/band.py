@@ -6,7 +6,7 @@ import functools
 from types import ModuleType
 from typing import Any, Literal
 
-from pipekit_array.functions import floating_inputs, is_dataarray, like
+from pipekit_array.arrays import floating_inputs, is_dataarray, like
 
 from radiomax._src.labelled import apply_along
 from radiomax.exceptions import ValidationError

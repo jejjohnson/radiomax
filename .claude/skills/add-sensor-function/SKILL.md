@@ -19,8 +19,8 @@ Private code goes in `src/radiomax/_src/<module>/<topic>.py`; the public module 
 
 ## 3. Write it
 
-- Open with `xp, (x, y) = floating_inputs(x, y)` from `pipekit_array.functions`, and call only functions of the array API standard on `xp`. Never `import jax` or `import xarray` at module level.
-- Decorate an elementwise function with `@elementwise()` from `pipekit_array.functions` (`n_outputs=` for a tuple), so a DataArray in gives a DataArray out.
+- Open with `xp, (x, y) = floating_inputs(x, y)` from `pipekit_array.arrays`, and call only functions of the array API standard on `xp`. Never `import jax` or `import xarray` at module level.
+- Decorate an elementwise function with `@elementwise()` from `pipekit_array.kernels` (`n_outputs=` for a tuple), so a DataArray in gives a DataArray out.
 - Constants enter in the input's dtype: `c = like(C, x, xp)`; float32 in gives float32 out.
 - State every unit. Angles are degrees unless `degrees=False`; a wavenumber is `wavenumber_cm`; longitude before latitude; time is `day` and `seconds`.
 - Parameters that belong together are a frozen dataclass record passed as a keyword argument with a default.

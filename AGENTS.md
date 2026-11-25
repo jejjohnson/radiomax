@@ -26,7 +26,7 @@ The public API is the set of public modules below; private code lives in `src/ra
 
 ### Boundaries
 
-- **Layer rule.** radiomax imports geophysix and the array backend `pipekit_array.functions`, and nothing else from the GeoStack at runtime (pipekit is Core, below GeoNumerics; decided in jejjohnson/pipekit#244). It never imports the operators or carriers of pipekit, gridax, integrix, functax, geotoolz, georeader or any GeoModels library; radtrax, geoops, geoproducts and xrops import it. integrix and functax are reference libraries in the tests.
+- **Layer rule.** radiomax imports geophysix and the array backend of `pipekit_array`, and nothing else from the GeoStack at runtime (pipekit is Core, below GeoNumerics; decided in jejjohnson/pipekit#244). It never imports the operators or carriers of pipekit, gridax, integrix, functax, geotoolz, georeader or any GeoModels library; radtrax, geoops, geoproducts and xrops import it. integrix and functax are reference libraries in the tests.
 - **Three runtime dependencies**: `numpy>=2.0`, `geophysix` and `pipekit-array[numpy,compat]`, which brings pipekit-ops and `array-api-compat`. pipekit is pinned to one git tag until it is on PyPI (jejjohnson/pipekit#247). JAX and xarray are extras, and any other optional one goes behind an extra and an in-function import that names the extra when it is missing.
 - **Ownership test.** Does it need a model of radiation moving through an atmospheric state? Then it is radtrax's. Is it geometry, a unit conversion, or an empirical formula with given coefficients, applied pixel by pixel? Then it belongs here. A constant or a fact about the Earth itself is geophysix's.
 - **No files.** radiomax reads no files and downloads nothing: coefficients, spectra and responses arrive as arrays from the readers.
@@ -40,7 +40,7 @@ Each foundation brings a rule. Breaking one runs fine on your machine and fails 
 | Foundation | The package uses it for | The rule it brings |
 |---|---|---|
 | **NumPy ≥ 2.0** | The default namespace; host-side builders | NumPy in gives NumPy out; no function needs JAX or xarray installed. |
-| **pipekit-array** (`pipekit_array.functions`) | The namespace, the dtype and the device of a call, and DataArrays | A change to them is made there, so that geophysix and gridax get it too. Only functions of the array API standard are called on the namespace; `array_api_strict` in the tests refuses the rest. |
+| **pipekit-array** (`pipekit_array.arrays`) | The namespace, the dtype and the device of a call, and DataArrays | A change to them is made there, so that geophysix and gridax get it too. Only functions of the array API standard are called on the namespace; `array_api_strict` in the tests refuses the rest. |
 | **geophysix** | Constants, `Ellipsoid`, Earth-centred coordinates | No constant or Earth radius is written here. |
 | **JAX** (extra `jax`) | The same functions under `jit`, `vmap` and `grad` | Never imported at module level. |
 | **xarray** (extra `xarray`) | A DataArray in, a DataArray out | Imported only when a DataArray arrives. |
@@ -68,7 +68,7 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | Scan angles to longitude and latitude, an off-Earth mask of a geostationary disk | `radiomax.geometry.geostationary_lonlat`, `geostationary_scan_angles`, `geostationary_on_earth` |
 | A whiskbroom's scan angles, pixel growth or bowtie | `radiomax.geometry.scan_angles`, `scan_pixel_growth`, `bowtie_detector_positions` |
 | The quadratic of a line of sight and the Earth, a parallax shift | `radiomax.geometry.earth_intersection`, `apparent_position`; `near_root` from `radiomax._src.geometry.intersection` inside the package |
-| `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`; `pipekit_array.functions.safe_sqrt`, `safe_atan2` |
+| `angle * pi / 180` behind a `degrees` argument, an angle modulo 360°, a root or an `atan2` whose gradient is NaN at 0 | `radiomax._src.numerics.to_radians`, `wrap_turn`; `pipekit_array.arrays.safe_sqrt`, `safe_atan2` |
 | `gain * dn + offset`, `pi * L * d**2 / (E0 * cos(sza))` or its inverse | `radiomax.radiometry.counts_to_radiance`, `radiance_to_counts`, `counts_to_reflectance`, `reflectance`, `radiance_from_reflectance` |
 | A trapezoid sum over a spectral response, a band irradiance, `E * wl**2 / 1e7` | `radiomax.radiometry.band_average`, `band_irradiance`, `trapezoid_weights`, `per_nm_to_per_cm`, `per_cm_to_per_nm` |
 | A response on another grid than its table, an interpolated response times a spectrum | `radiomax.radiometry.response_matrix` (exact, host), `apply_response`, `apply_response_adjoint`, `response_coverage` |
@@ -82,10 +82,10 @@ Before writing a helper, a constant, a conversion or a formula, find out whether
 | `(dn / lut) ** 2`, `beta0 * sin(incidence)`, `sigma0 / cos(incidence)` | `radiomax.sar.dn_to_backscatter`, `beta0_to_sigma0`, `sigma0_to_gamma0` and their inverses |
 | An altimeter's dry, wet or ionospheric correction, an inverse barometer, `altitude - (range + corrections)` | `radiomax.altimetry.dry_troposphere_correction`, `wet_troposphere_correction`, `ionosphere_correction`, `dual_frequency_ionosphere_correction`, `inverse_barometer`, `sea_surface_height` |
 | A formula's coefficients as a sequence, an array or a DataArray | `unpack_coefficients` from `radiomax._src.retrievals.coefficients` |
-| A frozen record that must be a JAX pytree | `@register_record` from `pipekit_array.records` |
-| `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `namespace_of`, `floating_inputs` from `pipekit_array.functions` |
-| A constant as an array of the input's dtype, on its device | `pipekit_array.functions.like` |
-| `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` and `is_dataarray` from `pipekit_array.functions`; `radiomax._src.labelled.apply_along` for a function that consumes a named dimension |
+| A frozen record that must be a JAX pytree | `@register_record` from `pipekit_array.arrays` |
+| `xp = np if isinstance(x, np.ndarray) else jnp`, or `x.astype(float)` on an input | `namespace_of`, `floating_inputs` from `pipekit_array.arrays` |
+| A constant as an array of the input's dtype, on its device | `pipekit_array.arrays.like` |
+| `isinstance(x, xr.DataArray)`, or a call to `xr.apply_ufunc` | `@elementwise` from `pipekit_array.kernels` and `is_dataarray` from `pipekit_array.arrays`; `radiomax._src.labelled.apply_along` for a function that consumes a named dimension |
 | A new exception for a bad argument | `ValidationError` |
 
 ## The contracts

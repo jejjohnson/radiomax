@@ -6,7 +6,8 @@ from types import ModuleType
 from typing import Any
 
 from geophysix.earth import WGS84, Ellipsoid
-from pipekit_array.functions import elementwise, floating_inputs, like, safe_sqrt
+from pipekit_array.arrays import floating_inputs, like, safe_sqrt
+from pipekit_array.kernels import elementwise
 
 
 __all__ = [

@@ -38,7 +38,7 @@ Skip anything ruff, ty or the tests already enforce (formatting, import order, `
 
 - Every function, class or module the diff **adds** has been checked against [`docs/api/capabilities.md`](docs/api/capabilities.md) and the private helpers in "Reuse before you write" in `AGENTS.md`. A re-implemented Earth radius or physical constant (geophysix has it), solar angle, air mass, reflectance or Planck formula is a **High** finding, with the existing name to use.
 - No new runtime dependency without discussion; an optional one sits behind an extra and an in-function import that names the extra. `uv.lock` is updated with any dependency change.
-- Imports keep pointing one way (the module table in `AGENTS.md`); the library imports geophysix and `pipekit_array.functions`, and never gridax, integrix, functax, geotoolz, georeader or any model at runtime.
+- Imports keep pointing one way (the module table in `AGENTS.md`); the library imports geophysix and `pipekit_array`, and never gridax, integrix, functax, geotoolz, georeader or any model at runtime.
 - A rename or removal of a public name keeps the old name working with a `DeprecationWarning` for at least one release.
 
 ### 2. The contracts

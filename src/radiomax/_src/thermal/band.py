@@ -6,8 +6,8 @@ import dataclasses
 from typing import Any
 
 from geophysix.constants import STANDARD, Constants
-from pipekit_array.functions import elementwise, floating_inputs, like
-from pipekit_array.records import register_record
+from pipekit_array.arrays import floating_inputs, like, register_record
+from pipekit_array.kernels import elementwise
 
 
 __all__ = [

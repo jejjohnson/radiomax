@@ -6,7 +6,8 @@ from types import ModuleType
 from typing import Any
 
 from geophysix.constants import STANDARD, Constants
-from pipekit_array.functions import elementwise, floating_inputs, like
+from pipekit_array.arrays import floating_inputs, like
+from pipekit_array.kernels import elementwise
 
 
 __all__ = [

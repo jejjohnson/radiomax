@@ -1,4 +1,4 @@
-"""radiomax on the array backend of `pipekit_array.functions`, which tests itself."""
+"""radiomax on the array backend of `pipekit_array.arrays`, which tests itself."""
 
 from __future__ import annotations
 

@@ -26,7 +26,7 @@ The diff (`git diff <base>...HEAD`, default base `main`) or the files / commit r
    - a BRDF kernel, a split-window or an ocean-colour formula → `radiomax.retrievals`;
    - a SAR calibration or a conversion between σ⁰, β⁰ and γ⁰ → `radiomax.sar`;
    - an altimeter range correction or a sea surface height → `radiomax.altimetry`;
-   - an array-namespace switch or an `xr.apply_ufunc` call → `pipekit_array.functions`, `radiomax._src.labelled`;
+   - an array-namespace switch or an `xr.apply_ufunc` call → `pipekit_array.arrays`, `radiomax._src.labelled`;
    - a new exception class for a bad argument → `ValidationError`;
    - a public name that duplicates another public name for a different object (`tests/test_capabilities.py` will fail on it).
 

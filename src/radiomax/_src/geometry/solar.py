@@ -8,14 +8,14 @@ from types import ModuleType
 from typing import Any
 
 import numpy as np
-from pipekit_array.functions import (
-    elementwise,
+from pipekit_array.arrays import (
     floating_inputs,
     is_dataarray,
     like,
     safe_atan2,
     safe_sqrt,
 )
+from pipekit_array.kernels import elementwise
 
 from radiomax._src.numerics import to_radians, wrap_turn
 from radiomax.exceptions import ValidationError

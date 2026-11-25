@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from geophysix.earth import SPHERE
-from pipekit_array.functions import elementwise, floating_inputs, like, safe_sqrt
+from pipekit_array.arrays import floating_inputs, like, safe_sqrt
+from pipekit_array.kernels import elementwise
 
 from radiomax._src.numerics import full_turn, to_radians
 

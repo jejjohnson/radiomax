@@ -16,7 +16,7 @@ standard library keeps working without importing anything from this package.
 
 from __future__ import annotations
 
-from pipekit_array.functions import BackendError
+from pipekit_array.arrays import BackendError
 
 
 __all__ = [
