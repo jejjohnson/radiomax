@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.12](https://github.com/jejjohnson/radiomax/compare/v0.0.11...v0.0.12) (2026-11-25)
+
+
+### Bug Fixes
+
+* **deps:** pipekit-array 0.2.0 and its areas ([#84](https://github.com/jejjohnson/radiomax/issues/84)) ([649b04c](https://github.com/jejjohnson/radiomax/commit/649b04c342356cdf0eb810dfcd91cfeff14e26b0))
+
 ## [0.0.11](https://github.com/jejjohnson/radiomax/compare/v0.0.10...v0.0.11) (2026-11-25)
 
 
