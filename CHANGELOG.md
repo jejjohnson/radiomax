@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.13](https://github.com/jejjohnson/radiomax/compare/v0.0.12...v0.0.13) (2026-11-26)
+
+
+### Bug Fixes
+
+* **deps:** pipekit at pipekit-array-v0.3.0 and geophysix v0.0.10 ([#86](https://github.com/jejjohnson/radiomax/issues/86)) ([e70c5df](https://github.com/jejjohnson/radiomax/commit/e70c5df35d29be6fb3c44e7a2879757a9a73d306))
+
 ## [0.0.12](https://github.com/jejjohnson/radiomax/compare/v0.0.11...v0.0.12) (2026-11-25)
 
 
