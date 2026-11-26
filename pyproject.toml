@@ -22,7 +22,7 @@ classifiers = [
 dependencies = [
     "numpy>=2.0",
     # constants, the ellipsoid and Earth-centred coordinates
-    "geophysix>=0.0.9",
+    "geophysix>=0.0.10",
     # the array backend, pipekit_array.arrays; compat is array-api-compat
     "pipekit-array[numpy,compat]>=0.2.0",
 ]
@@ -92,10 +92,10 @@ docs = [
 
 [tool.uv.sources]
 # geophysix is not on PyPI: it resolves from git, by tag.
-geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.9" }
+geophysix = { git = "https://github.com/jejjohnson/geophysix", tag = "v0.0.10" }
 # pipekit neither (jejjohnson/pipekit#247). Every package of the stack pins its
 # packages to one tag: uv refuses two refs of one repository.
-pipekit-array = { git = "https://github.com/jejjohnson/pipekit", subdirectory = "packages/pipekit-array", tag = "pipekit-array-v0.2.0" }
+pipekit-array = { git = "https://github.com/jejjohnson/pipekit", subdirectory = "packages/pipekit-array", tag = "pipekit-array-v0.3.0" }
 
 [build-system]
 requires = ["hatchling"]
