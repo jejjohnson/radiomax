@@ -795,8 +795,8 @@ wheels = [
 
 [[package]]
 name = "geophysix"
-version = "0.0.9"
-source = { git = "https://github.com/jejjohnson/geophysix?tag=v0.0.9#c268a991aad9abf6bed2a0f4e4d0b5d324b93de5" }
+version = "0.0.10"
+source = { git = "https://github.com/jejjohnson/geophysix?tag=v0.0.10#3f3fd0774e40d2582df936d5f6cb2686cfa458af" }
 dependencies = [
     { name = "numpy" },
     { name = "pipekit-array", extra = ["compat", "numpy"] },
@@ -2077,8 +2077,8 @@ wheels = [
 
 [[package]]
 name = "pipekit-array"
-version = "0.2.0"
-source = { git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-array&tag=pipekit-array-v0.2.0#94c766d8b3cebbed07dafba43de32e0680d5d0f6" }
+version = "0.3.0"
+source = { git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-array&tag=pipekit-array-v0.3.0#8213f3a766d41c1e8afd907e8134b82479a215d0" }
 dependencies = [
     { name = "pipekit-ops" },
 ]
@@ -2093,8 +2093,8 @@ numpy = [
 
 [[package]]
 name = "pipekit-ops"
-version = "0.3.0"
-source = { git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-ops&tag=pipekit-array-v0.2.0#94c766d8b3cebbed07dafba43de32e0680d5d0f6" }
+version = "0.4.0"
+source = { git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-ops&tag=pipekit-array-v0.3.0#8213f3a766d41c1e8afd907e8134b82479a215d0" }
 
 [[package]]
 name = "platformdirs"
@@ -2514,7 +2514,7 @@ wheels = [
 
 [[package]]
 name = "radiomax"
-version = "0.0.11"
+version = "0.0.12"
 source = { editable = "." }
 dependencies = [
     { name = "geophysix" },
@@ -2572,10 +2572,10 @@ typecheck = [
 
 [package.metadata]
 requires-dist = [
-    { name = "geophysix", git = "https://github.com/jejjohnson/geophysix?tag=v0.0.9" },
+    { name = "geophysix", git = "https://github.com/jejjohnson/geophysix?tag=v0.0.10" },
     { name = "jax", marker = "extra == 'jax'", specifier = ">=0.4.30" },
     { name = "numpy", specifier = ">=2.0" },
-    { name = "pipekit-array", extras = ["numpy", "compat"], git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-array&tag=pipekit-array-v0.2.0" },
+    { name = "pipekit-array", extras = ["numpy", "compat"], git = "https://github.com/jejjohnson/pipekit?subdirectory=packages%2Fpipekit-array&tag=pipekit-array-v0.3.0" },
     { name = "xarray", marker = "extra == 'xarray'", specifier = ">=2024.6" },
 ]
 provides-extras = ["jax", "xarray"]
